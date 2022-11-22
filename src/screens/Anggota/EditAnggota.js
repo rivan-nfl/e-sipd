@@ -24,7 +24,7 @@ const EditAnggota = ({ route, navigation }) => {
       <Layout>
           {/* Image */}
             <View style={styles.photoContainer}>
-                <Image source={params.img} style={styles.photo} />
+                <Image source={{uri: params.foto}} style={styles.photo} />
             </View>
             {/* Upload Button */}
             <CustomButton title='Choose File' buttonStyle={styles.chooseBtn} style={styles.chooseBtnTxt} onPress={() => alert('Upload File')} />

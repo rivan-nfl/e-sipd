@@ -6,7 +6,7 @@ import axios from 'axios'
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 
-const DaftarDipa = ({ navigation }) => {
+const DaftarPerjalanan = ({ navigation }) => {
     const token = useSelector(state => state.auth.token)
 
     const [dataDipa, setDataDipa] = useState([])
@@ -36,7 +36,7 @@ const DaftarDipa = ({ navigation }) => {
     return (
         <View style={{ flex: 1 }}>
         {/* Header */}
-        <Header title='Daftar DIPA' />
+        <Header title='Daftar Perjalanan' />
         {/* Content */}
             <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
             <View style={styles.content}>
@@ -58,7 +58,7 @@ const DaftarDipa = ({ navigation }) => {
     )
 }
 
-export default DaftarDipa
+export default DaftarPerjalanan
 
 const styles = StyleSheet.create({
     content: {

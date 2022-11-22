@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import DropDownPicker from 'react-native-dropdown-picker';
 
-import photoProfile from '../../../assets/images/pp.jpg'
+import photoProfile from '../../../assets/images/pp.png'
 import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { COLORS } from '../../../utils/colors'
 

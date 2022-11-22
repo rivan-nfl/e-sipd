@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useSelector } from 'react-redux'
+
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 import logoTni from '../../assets/images/tni.png'
 
-const dummyAdminMenu = [
+const adminMenu = [
   {
     label: 'Daftar Anggota',
     path: 'Daftar Anggota'
@@ -15,7 +17,7 @@ const dummyAdminMenu = [
   },
   {
     label: 'Daftar Perjalanan',
-    path: ''
+    path: 'Daftar Perjalanan'
   },
   {
     label: 'Daftar DIPA',
@@ -28,9 +30,7 @@ const dummyDipaBottomMenu = ['Daftar Perjalanan', 'Anggaran Perjalanan Dinas', '
 const dummyAnggotaBottomMenu = ['Daftar Perjalanan', 'Laporan Perjalanan Dinas']
 
 const Home = ({ navigation }) => {
-  const [role, setRole] = useState('admin')
-  // const [role, setRole] = useState('dipa')
-  // const [role, setRole] = useState('anggota')
+  const role = useSelector(state => state.user.role)
 
   return (
     <View style={{ flex: 1 }}>
@@ -53,11 +53,11 @@ const Home = ({ navigation }) => {
         {/* Admin Top Menu */}
         <View style={styles.topMenu}>
           {/* Admin Menu Card */}
-          { role == 'admin' && dummyAdminMenu.map((item, index) => (
+          { role == 'admin' && adminMenu.map((item, index) => (
             <Pressable 
               key={index} 
               style={styles.menuItems}
-              onPress={() => item.label != 'Daftar Perjalanan' ? navigation.navigate(item.path) : alert('On Development')}
+              onPress={() => navigation.navigate(item.path)}
             >
               <Text style={styles.menuText}>{item.label}</Text>
             </Pressable>

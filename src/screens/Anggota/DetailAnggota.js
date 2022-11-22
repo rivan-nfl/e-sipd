@@ -4,6 +4,7 @@ import { COLORS } from '../../utils/colors';
 
 import Layout from '../../components/Layout';
 import CustomButton from '../../components/Button';
+import photoProfile from '../../assets/images/pp.png'
 
 const DetailAnggota = ({ route, navigation }) => {
     const { params } = route;
@@ -11,7 +12,7 @@ const DetailAnggota = ({ route, navigation }) => {
     return (
         <Layout>
             <View style={styles.photoContainer}>
-                <Image source={params.img} style={styles.photo} />
+                <Image source={params.foto ? {uri: params.foto} : photoProfile} style={styles.photo} />
             </View>
             <View style={{ width: '80%', flex: 1 }}>
                 <Text style={styles.text}>{params.nama}</Text>

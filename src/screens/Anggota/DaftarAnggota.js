@@ -1,58 +1,64 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { useSelector } from 'react-redux'
+import axios from 'axios'
+
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
-
-const dummyAnggota = [
-    {
-        nama: 'Nama Anggota',
-        nrp: 'NRP',
-        pangkat: 'Pangkat',
-        jabatan: 'Jabatan',
-        img: require('../../assets/images/pp.jpg')
-    },
-    {
-        nama: 'Nama Anggota',
-        nrp: 'NRP',
-        pangkat: 'Pangkat',
-        jabatan: 'Jabatan',
-        img: require('../../assets/images/pp.jpg')
-    },
-    {
-        nama: 'Nama Anggota',
-        nrp: 'NRP',
-        pangkat: 'Pangkat',
-        jabatan: 'Jabatan',
-        img: require('../../assets/images/pp.jpg')
-    },
-]
+import photoProfile from '../../assets/images/pp.png'
 
 const DaftarAnggota = ({ navigation }) => {
-  return (
-    <View style={{ flex: 1 }}>
-      {/* Header */}
-      <Header title='Daftar Anggota' />
-      {/* Content */}
-        <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.content}>
-            { dummyAnggota.map((item, index) => (
-                <Pressable
-                    key={index}
-                    style={styles.card}
-                    onPress={() => navigation.navigate('Detail Anggota', item)}
-                >
-                    <View style={styles.photoContainer}>
-                        <Image source={item.img} style={styles.photo} />
-                    </View>
-                    <Text style={styles.anggotaTitle}>{item.nama}</Text>
-                    <Text style={styles.anggotaTitle}>{item.nrp}</Text>
-                    <Text style={styles.anggotaText}>{item.pangkat}</Text>
-                </Pressable>
-            ))}
+    const token = useSelector(state => state.auth.token)
+
+    const [dataAnggota, setDataAnggota] = useState([])
+
+    const getAllAnggota = () => {
+        axios({
+            method: 'GET',
+            url: `http://10.0.2.2:4000/users`,
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            params: {
+                role: 'anggota'
+            },
+          })
+          .then(res => {
+            setDataAnggota(res.data.data)
+          })
+          .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+          })
+    }
+
+    useEffect(() => getAllAnggota(), [])
+
+    return (
+        <View style={{ flex: 1 }}>
+        {/* Header */}
+        <Header title='Daftar Anggota' />
+        {/* Content */}
+            <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: COLORS.WHITE }}>
+            <View style={styles.content}>
+                { dataAnggota.map((item, index) => (
+                    <Pressable
+                        key={index}
+                        style={styles.card}
+                        onPress={() => navigation.navigate('Detail Anggota', item)}
+                    >
+                        <View style={styles.photoContainer}>
+                            <Image source={item.foto ? {uri: item.foto} : photoProfile} style={styles.photo} />
+                        </View>
+                        <Text style={styles.anggotaTitle}>{item.nama}</Text>
+                        <Text style={styles.anggotaTitle}>{item.nrp}</Text>
+                        <Text style={styles.anggotaText}>{item.pangkat}</Text>
+                    </Pressable>
+                ))}
+            </View>
+            </ScrollView>
         </View>
-        </ScrollView>
-    </View>
-  )
+    )
 }
 
 export default DaftarAnggota
