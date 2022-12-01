@@ -3,7 +3,9 @@ import { StyleSheet, Text, View } from 'react-native'
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 
-const NotifikasiDetail = () => {
+const NotifikasiDetail = ({ route }) => {
+  const { params } = route
+
   return (
     <View style={{ flex: 1 }}>
       {/* Header */}
@@ -12,11 +14,14 @@ const NotifikasiDetail = () => {
       <View style={styles.content}>
         {/* Notif Header */}
         <View style={styles.header}>
-          <Text style={styles.titleText}>Notifikasi Title</Text>
+          <Text style={styles.titleText}>{params.title}</Text>
+        </View>
+        <View style={styles.header}>
+          <Text style={[styles.contentText, { fontWeight: 'bold' }]}>{params.deskripsi}</Text>
         </View>
         {/* Notif Content */}
         <View style={styles.notifContent}>
-          <Text style={styles.contentText}>Notifikasi Detail</Text>
+          <Text style={styles.contentText}>{params.detail}</Text>
         </View>
       </View>
     </View>

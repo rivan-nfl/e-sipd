@@ -1,24 +1,52 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { COLORS } from '../../utils/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProfile } from '../../service/userService';
 
+import { COLORS } from '../../utils/colors';
 import Layout from '../../components/Layout';
 import CustomButton from '../../components/Button';
 
 const DetailDipa = ({ route, navigation }) => {
+    const dispatch = useDispatch()
+    const token = useSelector(state => state.auth.token)
+    const user = useSelector(state => state.userManagement)
+
     const { params } = route;
+
+    useEffect(() => {
+        getProfile(params.id, token)
+        .then(res => {
+            dispatch({type: 'SAVE_CURRENT_USER', data: {
+                id: res.data.data.id,
+                nama: res.data.data.nama,
+                username: res.data.data.username,
+                nrp: res.data.data.nrp,
+                alamat: res.data.data.alamat,
+                pangkat: res.data.data.pangkat,
+                bagian: res.data.data.bagian,
+                foto: res.data.data.foto,
+                jabatan: res.data.data.jabatan,
+                role: res.data.data.role
+            }})
+        })
+        .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+        })
+    }, [])
 
     return (
         <Layout title='Detail DIPA'>
             <View style={{ width: '80%', flex: 1, paddingTop: 50 }}>
-                <Text style={styles.text}>{params.nama}</Text>
-                <Text style={styles.text}>{params.nrp}</Text>
-                <Text style={styles.text}>{params.pangkat}</Text>
-                <Text style={styles.text}>{params.jabatan}</Text>
-                <Text style={styles.text}>{params.bagian}</Text>
+                <Text style={styles.text}>{user.nama}</Text>
+                <Text style={styles.text}>{user.nrp}</Text>
+                <Text style={styles.text}>{user.pangkat}</Text>
+                <Text style={styles.text}>{user.jabatan}</Text>
+                <Text style={styles.text}>{user.bagian}</Text>
             </View>
             <View style={styles.footer}>
-                <CustomButton title='Edit' buttonStyle={styles.editBtn} onPress={() => navigation.navigate('Edit Dipa', params)} />
+                <CustomButton title='Edit' buttonStyle={styles.editBtn} onPress={() => navigation.navigate('Edit Dipa', user)} />
                 <CustomButton title='Delete' buttonStyle={styles.deleteBtn} style={styles.editBtnTxt} />
             </View>
         </Layout>

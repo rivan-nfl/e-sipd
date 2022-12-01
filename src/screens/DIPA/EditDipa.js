@@ -1,34 +1,78 @@
 import React, { useState } from 'react'
 import DropDownPicker from 'react-native-dropdown-picker';
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { COLORS } from '../../utils/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { editAnggota, getProfile } from '../../service/userService';
 
+import { COLORS } from '../../utils/colors';
 import Layout from '../../components/Layout';
 import CustomButton from '../../components/Button';
 import Input from '../../components/Input';
 
-const EditAnggota = ({ route }) => {
+const EditDipa = ({ route, navigation }) => {
+    const dispatch = useDispatch()
+
+    const token = useSelector(state => state.auth.token)
+
     const { params } = route;
 
     // Pangkat
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
+    const [pangkat, setPangkat] = useState(params.pangkat)
     const [items, setItems] = useState([
-      {label: 'Letnan', value: 'letnan'},
-      {label: 'Kapten', value: 'kapten'},
-      {label: 'Kolonel', value: 'kolonel'},
-      {label: 'Jenderal', value: 'jenderal'}
+      {label: 'Letnan', value: 'Letnan'},
+      {label: 'Kapten', value: 'Kapten'},
+      {label: 'Kolonel', value: 'Kolonel'},
+      {label: 'Jenderal', value: 'Jenderal'}
     ]);
 
     // Bagian
     const [openBagian, setOpenBagian] = useState(false);
-    const [valueBagian, setValueBagian] = useState(null);
+    const [bagian, setBagian] = useState(params.bagian)
     const [itemsBagian, setItemsBagian] = useState([
+      {label: 'Manajemen', value: 'Manajemen'},
+      {label: 'Pengurus', value: 'Pengurus'},
       {label: 'Bagian 1', value: '1'},
       {label: 'Bagian 2', value: '2'},
-      {label: 'Bagian 3', value: '3'},
-      {label: 'Bagian 4', value: '4'}
     ]);
+
+    // Data
+    const [nama, setNama] = useState(params.nama)
+    const [nrp, setNrp] = useState(params.nrp)
+    const [jabatan, setJabatan] = useState(params.jabatan)
+
+    const handleEditDipa = () => {
+      editAnggota(params.id, token, {
+        nama,
+        nrp,
+        pangkat,
+        jabatan,
+        bagian,
+      })
+      .then(response => {
+        getProfile(params.id, token)
+        .then(res => {
+          dispatch({type: 'SAVE_CURRENT_USER', data: {
+            id: res.data.data.id,
+            nama: res.data.data.nama,
+            username: res.data.data.username,
+            nrp: res.data.data.nrp,
+            alamat: res.data.data.alamat,
+            pangkat: res.data.data.pangkat,
+            bagian: res.data.data.bagian,
+            foto: res.data.data.foto,
+            jabatan: res.data.data.jabatan,
+            role: res.data.data.role
+          }})
+          alert('Sukses Mengedit Anggota')
+          navigation.goBack()
+        })
+      })
+      .catch(err => {
+        console.log('err =', err.response.data)
+        alert(err.response.data.message)
+      })
+    }
 
     return (
       <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
@@ -37,11 +81,11 @@ const EditAnggota = ({ route }) => {
             <View style={{ width: '80%' }}>
               <View style={styles.menu}>
                 <Text style={styles.menuTxt}>Nama</Text>
-                <Input placeholder={params.nama} />
+                <Input value={nama} onChangeText={text => setNama(text)} />
               </View>
               <View style={styles.menu}>
                 <Text style={styles.menuTxt}>NRP</Text>
-                <Input placeholder={params.nrp} />
+                <Input value={nrp} onChangeText={text => setNrp(text)} />
               </View>
               <View style={[styles.menu, {zIndex: 2}]}>
                 <Text style={styles.menuTxt}>Pangkat</Text>
@@ -51,10 +95,10 @@ const EditAnggota = ({ route }) => {
                   style={{ borderColor: COLORS.GRAY }}
                   labelStyle={{ fontSize: 17 }}
                   open={open}
-                  value={value}
+                  value={pangkat}
                   items={items}
                   setOpen={setOpen}
-                  setValue={setValue}
+                  setValue={setPangkat}
                   setItems={setItems}
                 />
               </View>
@@ -66,28 +110,28 @@ const EditAnggota = ({ route }) => {
                   style={{ borderColor: COLORS.GRAY, zIndex: 100 }}
                   labelStyle={{ fontSize: 17 }}
                   open={openBagian}
-                  value={valueBagian}
+                  value={bagian}
                   items={itemsBagian}
                   setOpen={setOpenBagian}
-                  setValue={setValueBagian}
+                  setValue={setBagian}
                   setItems={setItemsBagian}
                 />
               </View>
               <View style={styles.menu}>
                 <Text style={styles.menuTxt}>Jabatan</Text>
-                <Input placeholder={params.jabatan} />
+                <Input value={jabatan} onChangeText={text => setJabatan(text)} />
               </View>
             </View>
             {/* Button */}
             <View style={styles.footer}>
-                <CustomButton title='Submit' buttonStyle={styles.submitBtn} onPress={() => alert('Submit')} />
+                <CustomButton title='Submit' buttonStyle={styles.submitBtn} onPress={() => handleEditDipa()} />
             </View>
       </Layout>
       </ScrollView>
     )
 }
 
-export default EditAnggota
+export default EditDipa
 
 const styles = StyleSheet.create({
     menu: {

@@ -26,8 +26,31 @@ const adminMenu = [
 ]
 const dummyAdminBottomMenu = ['Anggaran Perjalanan Dinas', 'Laporan Perjalanan Dinas']
 
-const dummyDipaBottomMenu = ['Daftar Perjalanan', 'Anggaran Perjalanan Dinas', 'Laporan Perjalanan Dinas']
-const dummyAnggotaBottomMenu = ['Daftar Perjalanan', 'Laporan Perjalanan Dinas']
+const dipaBottomMenu = [
+  {
+    label: 'Daftar Perjalanan',
+    path: 'Daftar Perjalanan'
+  },
+  {
+    label: 'Anggaran Perjalanan Dinas',
+    path: ''
+  },
+  {
+    label: 'Laporan Perjalanan Dinas',
+    path: ''
+  }
+]
+
+const anggotaBottomMenu = [
+  {
+    label: 'Daftar Perjalanan',
+    path: 'Daftar Perjalanan'
+  },
+  {
+    label: 'Laporan Perjalanan Dinas',
+    path: ''
+  },
+]
 
 const Home = ({ navigation }) => {
   const role = useSelector(state => state.user.role)
@@ -35,7 +58,7 @@ const Home = ({ navigation }) => {
   return (
     <View style={{ flex: 1 }}>
       {/* Header */}
-      <Header title='Admin' />
+      <Header title='Home' />
       {/* Content */}
       <View style={styles.content}>
         {/* Banner */}
@@ -73,18 +96,26 @@ const Home = ({ navigation }) => {
         </View>
         {/* DIPA Bottom Menu */}
         <View style={styles.bottomMenu}>
-          { role == 'dipa' && dummyDipaBottomMenu.map((item, index) => (
-            <View key={index} style={styles.menuItems}>
-              <Text style={styles.menuText}>{item}</Text>
-            </View>
+          { role == 'dipa' && dipaBottomMenu.map((item, index) => (
+            <Pressable 
+              key={index} 
+              style={styles.menuItems}
+              onPress={() => navigation.navigate(item.path)}
+            >
+              <Text style={styles.menuText}>{item.label}</Text>
+            </Pressable>
           ))}
         </View>
         {/* anggota Bottom Menu */}
         <View style={styles.bottomMenu}>
-          { role == 'anggota' && dummyAnggotaBottomMenu.map((item, index) => (
-            <View key={index} style={styles.menuItems}>
-              <Text style={styles.menuText}>{item}</Text>
-            </View>
+          { role == 'anggota' && anggotaBottomMenu.map((item, index) => (
+            <Pressable 
+              key={index} 
+              style={styles.menuItems}
+              onPress={() => navigation.navigate(item.path)}
+            >
+              <Text style={styles.menuText}>{item.label}</Text>
+            </Pressable>
           ))}
         </View>
       </View>

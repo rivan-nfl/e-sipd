@@ -1,27 +1,56 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dimensions, Image, StyleSheet, Text, View } from 'react-native'
-import { COLORS } from '../../utils/colors';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { COLORS } from '../../utils/colors';
 import Layout from '../../components/Layout';
 import CustomButton from '../../components/Button';
 import photoProfile from '../../assets/images/pp.png'
 
+import { getProfile } from '../../service/userService'
+
 const DetailAnggota = ({ route, navigation }) => {
+    const dispatch = useDispatch()
+    const token = useSelector(state => state.auth.token)
+    const user = useSelector(state => state.userManagement)
+
     const { params } = route;
 
+    useEffect(() => {
+        getProfile(params.id, token)
+        .then(res => {
+            dispatch({type: 'SAVE_CURRENT_USER', data: {
+                id: res.data.data.id,
+                nama: res.data.data.nama,
+                username: res.data.data.username,
+                nrp: res.data.data.nrp,
+                alamat: res.data.data.alamat,
+                pangkat: res.data.data.pangkat,
+                bagian: res.data.data.bagian,
+                foto: res.data.data.foto,
+                jabatan: res.data.data.jabatan,
+                role: res.data.data.role
+            }})
+        })
+        .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+        })
+    }, [])
+
     return (
-        <Layout>
+        <Layout title='Detail Anggota'>
             <View style={styles.photoContainer}>
-                <Image source={params.foto ? {uri: params.foto} : photoProfile} style={styles.photo} />
+                <Image source={user.foto ? {uri: user.foto} : photoProfile} style={styles.photo} />
             </View>
             <View style={{ width: '80%', flex: 1 }}>
-                <Text style={styles.text}>{params.nama}</Text>
-                <Text style={styles.text}>{params.nrp}</Text>
-                <Text style={styles.text}>{params.pangkat}</Text>
-                <Text style={styles.text}>{params.jabatan}</Text>
+                <Text style={styles.text}>{user.nama}</Text>
+                <Text style={styles.text}>{user.nrp}</Text>
+                <Text style={styles.text}>{user.pangkat}</Text>
+                <Text style={styles.text}>{user.jabatan}</Text>
             </View>
             <View style={styles.footer}>
-                <CustomButton title='Edit' buttonStyle={styles.editBtn} onPress={() => navigation.navigate('Edit Anggota', params)} />
+                <CustomButton title='Edit' buttonStyle={styles.editBtn} onPress={() => navigation.navigate('Edit Anggota', user)} />
                 <CustomButton title='Delete' buttonStyle={styles.deleteBtn} style={styles.editBtnTxt} />
             </View>
         </Layout>

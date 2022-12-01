@@ -1,235 +1,502 @@
-import React, { useState } from 'react'
-import DropDownPicker from 'react-native-dropdown-picker';
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { ScrollView, StyleSheet, Text, View, Pressable, Alert } from 'react-native'
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
+import { useSelector } from 'react-redux';
+
+import { getAllUsers } from '../../service/userService';
+import { createPerjalanan, getAllTransportasi } from '../../service/e-sipdService';
 import { COLORS } from '../../utils/colors'
 
 import Layout from '../../components/Layout'
 import Input from '../../components/Input'
 import CustomButton from '../../components/Button';
 
-const ESIPD = ({ route }) => {
-    const { params } = route;
+const ESIPD = ({ navigation }) => {
+    const token = useSelector(state => state.auth.token)
 
-    // Nama
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [items, setItems] = useState([
-      {label: 'Letnan', value: 'letnan'},
-      {label: 'Kapten', value: 'kapten'},
-      {label: 'Kolonel', value: 'kolonel'},
-      {label: 'Jenderal', value: 'jenderal'}
-    ]);
+    // Jarak
+    const [jarak, setJarak] = useState(0)
     
+    // Keterangan
+    const [keterangan, setKeterangan] = useState('')
+
+    // Nomor Sprint & SPPD
+    const [nomorSprint, setNomorSprint] = useState('')
+    const [nomorSPPD, setNomorSPPD] = useState('')
+
+    // Tanggal Berangkat
+    const [tanggalBerangkat, setTanggalBerangkat] = useState(new Date());
+    const [showTanggalBerangkat, setShowTanggalBerangkat] = useState(false);
+
+    const onChangeBerangkatDate = (event, selectedDate) => {
+        const currentDate = selectedDate;
+        setShowTanggalBerangkat(false);
+        setTanggalBerangkat(currentDate);
+    };
+
+    // Tanggal Kembali
+    const [tanggalKembali, setTanggalKembali] = useState(new Date());
+    const [showTanggalKembali, setShowTanggalKembali] = useState(false);
+
+    const onChangeKembaliDate = (event, selectedDate) => {
+        const currentDate = selectedDate;
+        setShowTanggalKembali(false);
+        setTanggalKembali(currentDate);
+    };
+
+    // Anggota
+    const [anggota, setAnggota] = useState();
+    const [selectedAnggota, setSelectedAnggota] = useState();
+    const [daftarAnggota, setDaftarAnggota] = useState([]);
+
     // Perjalanan Dinas
-    const [openPerjalanan, setOpenPerjalanan] = useState(false);
-    const [valuePerjalanan, setValuePerjalanan] = useState(null);
-    const [itemsPerjalanan, setItemsPerjalanan] = useState([
-      {label: 'Letnan', value: 'letnan'},
-      {label: 'Kapten', value: 'kapten'},
-      {label: 'Kolonel', value: 'kolonel'},
-      {label: 'Jenderal', value: 'jenderal'}
+    const [jenisPerjalanan, setJenisPerjalanan] = useState();
+    const [selectedJenisPerjalanan, setSelectedJenisPerjalanan] = useState();
+    const [daftarJenisPerjalanan, setDaftarJenisPerjalanan] = useState([
+        {
+            jenis: 'Pilih Jenis Perjalanan'
+        },
+        {
+            id: 'luar_kota',
+            jenis: 'Luar Kota'
+        },
+        {
+            id: 'dalam_kota',
+            jenis: 'Dalam Kota'
+        },
     ]);
 
     // Provinsi
-    const [openProvinsi, setOpenProvinsi] = useState(false);
-    const [valueProvinsi, setValueProvinsi] = useState(null);
-    const [itemsProvinsi, setItemsProvinsi] = useState([
-      {label: 'Letnan', value: 'letnan'},
-      {label: 'Kapten', value: 'kapten'},
-      {label: 'Kolonel', value: 'kolonel'},
-      {label: 'Jenderal', value: 'jenderal'}
+    const [provinsi, setProvinsi] = useState();
+    const [selectedProvinsi, setSelectedProvinsi] = useState();
+    const [daftarProvinsi, setDaftarProvinsi] = useState([
+        {
+            provinsi: 'Pilih Provinsi'
+        },
+        {
+            id: 'jawa_timur',
+            provinsi: 'Jawa Timur'
+        },
+        {
+            id: 'jawa_tengah',
+            provinsi: 'Jawa Tengah',
+        },
     ]);
 
     // Kota
-    const [openKota, setOpenKota] = useState(false);
-    const [valueKota, setValueKota] = useState(null);
-    const [itemsKota, setItemsKota] = useState([
-      {label: 'Letnan', value: 'letnan'},
-      {label: 'Kapten', value: 'kapten'},
-      {label: 'Kolonel', value: 'kolonel'},
-      {label: 'Jenderal', value: 'jenderal'}
+    const [kota, setKota] = useState();
+    const [selectedKota, setSelectedKota] = useState([]);
+    const [daftarKota, setDaftarKota] = useState([
+        {
+            kota: 'Pilih Kota'
+        },
+        {
+            kotaId: 1,
+            provinsiId: 'jawa_timur',
+            provinsi: 'Jawa Timur',
+            kota: 'Surabaya'
+        },
+        {
+            kotaId: 2,
+            provinsiId: 'jawa_timur',
+            provinsi: 'Jawa Timur',
+            kota: 'Madiun'
+        },
+        {
+            kotaId: 3,
+            provinsiId: 'jawa_timur',
+            provinsi: 'Jawa Timur',
+            kota: 'Jember'
+        },
+        {
+            kotaId: 4,
+            provinsiId: 'jawa_tengah',
+            provinsi: 'Jawa Tengah',
+            kota: 'Semarang'
+        },
+        {
+            kotaId: 5,
+            provinsiId: 'jawa_tengah',
+            provinsi: 'Jawa Tengah',
+            kota: 'Solo'
+        },
+        {
+            kotaId: 6,
+            provinsiId: 'jawa_tengah',
+            provinsi: 'Jawa Tengah',
+            kota: 'Tegal'
+        }
     ]);
 
     // Transportasi
-    const [openTransportasi, setOpenTransportasi] = useState(false);
-    const [valueTransportasi, setValueTransportasi] = useState(null);
-    const [itemsTransportasi, setItemsTransportasi] = useState([
-      {label: 'Letnan', value: 'letnan'},
-      {label: 'Kapten', value: 'kapten'},
-      {label: 'Kolonel', value: 'kolonel'},
-      {label: 'Jenderal', value: 'jenderal'}
+    const [transportasi, setTransportasi] = useState();
+    const [selectedTransportasi, setSelectedTransportasi] = useState();
+    const [daftarTransportasi, setDaftarTransportasi] = useState([
+        {
+            nama: 'Pilih Transportasi'
+        },
     ]);
 
     // Lokasi Asal
-    const [openLokasiAsal, setOpenLokasiAsal] = useState(false);
-    const [valueLokasiAsal, setValueLokasiAsal] = useState(null);
-    const [itemsLokasiAsal, setItemsLokasiAsal] = useState([
-      {label: 'Letnan', value: 'letnan'},
-      {label: 'Kapten', value: 'kapten'},
-      {label: 'Kolonel', value: 'kolonel'},
-      {label: 'Jenderal', value: 'jenderal'}
+    const [lokasiAsal, setLokasiAsal] = useState();
+    const [selectedLokasiAsal, setSelectedLokasiAsal] = useState();
+    const [daftarLokasiAsal, setDaftarLokasiAsal] = useState([
+        {
+            lokasi_awal: 'Pilih Lokasi Asal'
+        }
     ]);
 
     // Lokasi Tujuan
-    const [openLokasiTujuan, setOpenLokasiTujuan] = useState(false);
-    const [valueLokasiTujuan, setValueLokasiTujuan] = useState(null);
-    const [itemsLokasiTujuan, setItemsLokasiTujuan] = useState([
-      {label: 'Letnan', value: 'letnan'},
-      {label: 'Kapten', value: 'kapten'},
-    //   {label: 'Kolonel', value: 'kolonel'},
-    //   {label: 'Jenderal', value: 'jenderal'}
+    const [lokasiTujuan, setLokasiTujuan] = useState();
+    const [selectedLokasiTujuan, setSelectedLokasiTujuan] = useState();
+    const [daftarLokasiTujuan, setDaftarLokasiTujuan] = useState([
+        {
+            lokasi_tujuan: 'Pilih Tujuan'
+        }
     ]);
+
+    // Functions
+    const handleSubmit = () => {
+        const data = {
+            keterangan,
+            nomor_sprint: nomorSprint,
+            nomor_sppd: nomorSPPD,
+            jenis_perjalanan: jenisPerjalanan,
+            daerah_tujuan: provinsi,
+            tgl_berangkat: String(tanggalBerangkat),
+            tgl_kembali: String(tanggalKembali),
+            penerima: anggota
+        }
+
+        createPerjalanan(token, data)
+        .then(res => {
+            // console.log(res.data.data)
+            Alert.alert(
+                "Sukses",
+                "Berhasil Membuat Perjalanan",
+                [
+                    { text: "Kembali ke Beranda", onPress: () => navigation.navigate("Home") }
+                ]
+            );
+        })
+        .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+        })
+    }
+
+    // Loads
+    useEffect(() => {
+        if(provinsi) {
+            setSelectedKota(daftarKota.filter(item => item.provinsiId == provinsi))
+            setKota((daftarKota.filter(item => item.provinsiId == provinsi))[0].kotaId)
+        }
+    }, [provinsi])
+
+    useEffect(() => {
+        if(provinsi && kota) {
+            getAllTransportasi(token, {
+                type: jenisPerjalanan
+            })
+            .then(res => {
+                let newTransportasi = []
+                let newLokasiAwal = []
+                let newLokasiTujuan = []
+
+                for(let i = 0; i < res.data.data.length; i++) {
+                    const newTransport = newTransportasi.find(item => item.nama == res.data.data[i].nama)
+                    const newAwal = newLokasiAwal.find(item => item.lokasi_awal == res.data.data[i].lokasi_awal)
+                    const newTujuan = newLokasiTujuan.find(item => item.lokasi_tujuan == res.data.data[i].lokasi_tujuan)
+
+                    !newTransport ? newTransportasi.push(res.data.data[i]) : null
+                    !newAwal ? newLokasiAwal.push(res.data.data[i]) : null
+                    !newTujuan ? newLokasiTujuan.push(res.data.data[i]) : null
+                }
+
+                setDaftarTransportasi(newTransportasi)
+                setTransportasi(newTransportasi[0].nama)
+
+                setDaftarLokasiAsal(newLokasiAwal)
+                setLokasiAsal(newLokasiAwal[0].lokasi_awal)
+
+                setDaftarLokasiTujuan(newLokasiTujuan)
+                setLokasiTujuan(newLokasiTujuan[0].lokasi_tujuan)
+
+            })
+            .catch(err => {
+                console.log('err =', err.response.data)
+                alert(err.response.data.message)
+            })
+        }
+    }, [provinsi, kota])
+
+    useEffect(() => {
+        if(transportasi, lokasiAsal, lokasiTujuan) {
+            getAllTransportasi(token, {
+                type: jenisPerjalanan,
+                lokasi_asal: lokasiAsal || daftarLokasiAsal[0].lokasi_awal,
+                lokasi_tujuan: lokasiTujuan || daftarLokasiTujuan[0].lokasi_tujuan,
+                transportasi
+            })
+            .then(res => res.data.data.length ? setJarak(res.data.data[0].jarak) : setJarak(0))
+            .catch(err => {
+                console.log('err =', err.response.data[0])
+                alert(err.response.data.message)
+            })
+        }
+    }, [transportasi, lokasiAsal, lokasiTujuan])
+
+    useEffect(() => {
+        getAllUsers(token)
+        .then(res => {
+            setDaftarAnggota(res.data.data)
+        })
+        .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+        })
+    }, [])
 
     return (
         <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
         <Layout title='E - SIPD' contentStyle={{}}>
             <View style={{ width: '90%' }}>
-                <View style={[styles.menu, {zIndex: 2}]}>
+                <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nama Anggota</Text>
-                    <DropDownPicker
-                        placeholder='Pilih Anggota'
-                        placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                        style={{ borderColor: COLORS.GRAY }}
-                        labelStyle={{ fontSize: 17 }}
-                        open={open}
-                        value={value}
-                        items={items}
-                        setOpen={setOpen}
-                        setValue={setValue}
-                        setItems={setItems}
-                    />
+                    <View
+                        style={styles.picker}
+                    >
+                        <Picker
+                            selectedValue={anggota}
+                            onValueChange={itemValue => {
+                                setSelectedAnggota(daftarAnggota.find(item => item.id == itemValue));
+                                setAnggota(itemValue)
+                            }}
+                        >   
+                            { daftarAnggota.map((item, index) => item.role == 'anggota' &&
+                                <Picker.Item 
+                                    key={index} 
+                                    label={item.nama} 
+                                    value={item.id} 
+                                    style={{ fontSize: 17 }} 
+                                />
+                            )}
+                        </Picker>
+                    </View>
                 </View>
+                
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nama</Text>
-                    <Input placeholder={'Nama'} />
+                    <Text style={styles.text}>{selectedAnggota?.nama}</Text>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Pangkat</Text>
-                    <Input placeholder={'Pangkat'} />
+                    <Text style={styles.text}>{selectedAnggota?.pangkat}</Text>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Jabatan</Text>
-                    <Input placeholder={'Jabatan'} />
+                    <Text style={styles.text}>{selectedAnggota?.jabatan}</Text>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nomor Sprint</Text>
-                    <Text style={styles.text}>111 / XI / 2022</Text>
+                    <Input placeholder={'Nomor Sprint...'} style={{ flex: 1 }} value={nomorSprint} onChangeText={text => setNomorSprint(text)} />
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nomor SPPD</Text>
-                    <Text style={styles.text}>111 / XI / 2022</Text>
+                    <Input placeholder={'Nomor Sprint...'} style={{ flex: 1 }} value={nomorSPPD} onChangeText={text => setNomorSPPD(text)} />
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Maksud Perjalanan Dinas</Text>
-                    <Input placeholder={'...'} multiline maxLength={1000} />
+                    <Input
+                        placeholder={'...'}
+                        multiline 
+                        maxLength={1000} 
+                        value={keterangan} 
+                        onChangeText={text => setKeterangan(text)} 
+                    />
                 </View>
                 <View style={[styles.menu, {zIndex: 3}]}>
                     <Text style={styles.menuTxt}>Jenis Perjalanan Dinas</Text>
-                    <DropDownPicker
-                        placeholder='Pilih Jenis Perjalanan Dinas'
-                        placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                        style={{ borderColor: COLORS.GRAY }}
-                        labelStyle={{ fontSize: 17 }}
-                        open={openPerjalanan}
-                        value={valuePerjalanan}
-                        items={itemsPerjalanan}
-                        setOpen={setOpenPerjalanan}
-                        setValue={setValuePerjalanan}
-                        setItems={setItemsPerjalanan}
-                    />
+                    <View
+                        style={styles.picker}
+                    >
+                        <Picker
+                            selectedValue={jenisPerjalanan}
+                            onValueChange={itemValue => {
+                                setJenisPerjalanan(itemValue)
+                            }}
+                        >   
+                            { daftarJenisPerjalanan.map((item, index) =>
+                                <Picker.Item 
+                                    key={index} 
+                                    label={item.jenis} 
+                                    value={item.id} 
+                                    style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
+                                />
+                            )}
+                        </Picker>
+                    </View>
                 </View>
-                <View style={[styles.menu, {zIndex: 2}]}>
+                <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Daerah Tujuan</Text>
-                    <DropDownPicker
-                        placeholder='Pilih Provinsi'
-                        placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                        style={{ borderColor: COLORS.GRAY }}
-                        labelStyle={{ fontSize: 17 }}
-                        open={openProvinsi}
-                        value={valueProvinsi}
-                        items={itemsProvinsi}
-                        setOpen={setOpenProvinsi}
-                        setValue={setValueProvinsi}
-                        setItems={setItemsProvinsi}
-                    />
+                    <View
+                        style={styles.picker}
+                    >
+                        <Picker
+                            selectedValue={provinsi}
+                            onValueChange={itemValue => {
+                                setProvinsi(itemValue)
+                            }}
+                        >   
+                            { daftarProvinsi.map((item, index) =>
+                                <Picker.Item 
+                                    key={index} 
+                                    label={item.provinsi} 
+                                    value={item.id} 
+                                    style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
+                                />
+                            )}
+                        </Picker>
+                    </View>
                 </View>
-                <View style={[styles.menu, {zIndex: 1}]}>
-                    <DropDownPicker
-                        placeholder='Pilih Kota'
-                        placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                        style={{ borderColor: COLORS.GRAY }}
-                        labelStyle={{ fontSize: 17 }}
-                        open={openKota}
-                        value={valueKota}
-                        items={itemsKota}
-                        setOpen={setOpenKota}
-                        setValue={setValueKota}
-                        setItems={setItemsKota}
-                    />
+                <View style={styles.menu}>
+                    <View
+                        style={styles.picker}
+                    >
+                        <Picker
+                            selectedValue={kota}
+                            onValueChange={itemValue => {
+                                setKota(itemValue)
+                            }}
+                        >   
+                            { provinsi
+                                ? selectedKota.map((item, index) => 
+                                    <Picker.Item 
+                                        key={index} 
+                                        label={item.kota} 
+                                        value={item.kotaId} 
+                                        style={{ fontSize: 17, color: COLORS.BLACK }} 
+                                    />
+                                )
+                                : <Picker.Item 
+                                    label={'Pilih Provinsi'}
+                                    value={''} 
+                                    style={{ fontSize: 17, color: COLORS.GRAY }} 
+                                />
+                        }
+                        </Picker>
+                    </View>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Tanggal Berangkat</Text>
-                    <Text style={styles.text}>1 / 1 / 2022</Text>
+                    <Pressable onPress={() => setShowTanggalBerangkat(!showTanggalBerangkat)}>
+                        <Text style={styles.text}>{tanggalBerangkat.toLocaleDateString()}</Text>
+                    </Pressable>
+                    {showTanggalBerangkat && (
+                        <DateTimePicker
+                            testID="dateTimePicker"
+                            value={tanggalBerangkat}
+                            mode={'date'}
+                            is24Hour={true}
+                            onChange={onChangeBerangkatDate}
+                            minimumDate={new Date()}
+                        />
+                    )}
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Tanggal Kembali</Text>
-                    <Text style={styles.text}>1 / 1 / 2022</Text>
+                    <Pressable onPress={() => setShowTanggalKembali(!showTanggalKembali)}>
+                        <Text style={styles.text}>{tanggalKembali.toLocaleDateString()}</Text>
+                    </Pressable>
+                    {showTanggalKembali && (
+                        <DateTimePicker
+                            testID="dateTimePicker"
+                            value={tanggalKembali}
+                            mode={'date'}
+                            is24Hour={true}
+                            onChange={onChangeKembaliDate}
+                            minimumDate={tanggalBerangkat}
+                        />
+                    )}
                 </View>
                 <View style={{ borderWidth: 1, width: '100%', borderColor: COLORS.GRAY, marginVertical: 10 }} />
                 <View style={[styles.menu, {zIndex: 3}]}>
                     <Text style={styles.menuTxt}>Transportasi</Text>
-                    <DropDownPicker
-                        placeholder='Pilih Transportasi'
-                        placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                        style={{ borderColor: COLORS.GRAY }}
-                        labelStyle={{ fontSize: 17 }}
-                        open={openTransportasi}
-                        value={valueTransportasi}
-                        items={itemsTransportasi}
-                        setOpen={setOpenTransportasi}
-                        setValue={setValueTransportasi}
-                        setItems={setItemsTransportasi}
-                    />
+                    <View
+                        style={styles.picker}
+                    >
+                        <Picker
+                            selectedValue={transportasi}
+                            onValueChange={itemValue => {
+                                setTransportasi(itemValue)
+                            }}
+                        >   
+                            { daftarTransportasi.map((item, index) =>
+                                <Picker.Item 
+                                    key={index} 
+                                    label={item.nama} 
+                                    value={item.nama} 
+                                    style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
+                                />
+                            )}
+                        </Picker>
+                    </View>
                 </View>
                 <View style={[styles.menu, {zIndex: 2}]}>
                     <Text style={styles.menuTxt}>Lokasi Asal</Text>
-                    <DropDownPicker
-                        placeholder='Pilih Lokasi Asal'
-                        placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                        style={{ borderColor: COLORS.GRAY }}
-                        labelStyle={{ fontSize: 17 }}
-                        open={openLokasiAsal}
-                        value={valueLokasiAsal}
-                        items={itemsLokasiAsal}
-                        setOpen={setOpenLokasiAsal}
-                        setValue={setValueLokasiAsal}
-                        setItems={setItemsLokasiAsal}
-                    />
+                    <View
+                        style={styles.picker}
+                    >
+                        <Picker
+                            selectedValue={lokasiAsal}
+                            onValueChange={itemValue => {
+                                setLokasiAsal(itemValue)
+                            }}
+                        >   
+                            { daftarLokasiAsal.map((item, index) =>
+                                <Picker.Item 
+                                    key={index} 
+                                    label={item.lokasi_awal} 
+                                    value={item.lokasi_awal} 
+                                    style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
+                                />
+                            )}
+                        </Picker>
+                    </View>
                 </View>
                 <View style={[styles.menu, {zIndex: 1}]}>
                     <Text style={styles.menuTxt}>Lokasi Tujuan</Text>
-                    <DropDownPicker
-                        placeholder='Pilih Lokasi Tujuan'
-                        placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                        style={{ borderColor: COLORS.GRAY }}
-                        labelStyle={{ fontSize: 17 }}
-                        open={openLokasiTujuan}
-                        value={valueLokasiTujuan}
-                        items={itemsLokasiTujuan}
-                        setOpen={setOpenLokasiTujuan}
-                        setValue={setValueLokasiTujuan}
-                        setItems={setItemsLokasiTujuan}
-                    />
+                    <View
+                        style={styles.picker}
+                    >
+                        <Picker
+                            selectedValue={lokasiTujuan}
+                            onValueChange={itemValue => {
+                                setLokasiTujuan(itemValue)
+                            }}
+                        >   
+                            { daftarLokasiTujuan.map((item, index) =>
+                                <Picker.Item 
+                                    key={index} 
+                                    label={item.lokasi_tujuan} 
+                                    value={item.lokasi_tujuan} 
+                                    style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
+                                />
+                            )}
+                        </Picker>
+                    </View>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Jarak</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Input placeholder={'Jarak'} keyboardType='number-pad' style={{ flex: 1 }} />
+                        {/* <Input placeholder={'Jarak'} keyboardType='number-pad' style={{ flex: 1 }} /> */}
+                        <Text style={[styles.text, { flex: 1 }]}>{jarak}</Text>
                         <Text style={[styles.menuTxt, { marginLeft: 10 }]}>KM</Text>
                     </View>
                 </View>
                 <View style={styles.footer}>
-                    <CustomButton title='Submit' buttonStyle={styles.submitBtn} onPress={() => alert('Submit')} />
+                    <CustomButton title='Submit' buttonStyle={styles.submitBtn} onPress={handleSubmit} />
                 </View>
             </View>
         </Layout>
@@ -249,6 +516,11 @@ const styles = StyleSheet.create({
         color: COLORS.BLACK,
         marginBottom: 5
     },
+    picker: {
+        borderColor: COLORS.GRAY, 
+        borderWidth: 1, 
+        borderRadius: 8,
+    },
     text: {
         fontSize: 17,
         fontWeight: 'bold',
@@ -263,8 +535,8 @@ const styles = StyleSheet.create({
     footer: {
         flexDirection: 'row',
         marginTop: 40
-      },
-      submitBtn: {
+    },
+        submitBtn: {
         width: '100%',
-      },
+    },
 })

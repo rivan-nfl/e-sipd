@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 import axios from 'axios'
 
 import Container from '../../../components/Container'
 import Input from '../../../components/Input'
 import CustomButton from '../../../components/Button'
+import tniPhoto from '../../../assets/images/tni.png'
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -41,11 +42,13 @@ const Login = ({ navigation }) => {
 
   return (
     <Container style={styles.container}>
-      <View style={styles.logo} />
+      <View style={styles.logo} >
+        <Image source={tniPhoto} style={styles.logoImg} />
+      </View>
       <View style={styles.loginCard}>
         <Input placeholder='Username' onChangeText={text => setUsername(text)} value={username} />
         <Input placeholder='Password' secureTextEntry={true} style={styles.inputPassword} onChangeText={text => setPassword(text)} value={password} />
-        <CustomButton onPress={handleLogin} />
+        <CustomButton title='Login' onPress={handleLogin} />
       </View>
       <Text style={styles.bottomText}>E - SIPD</Text>
     </Container>
@@ -61,9 +64,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25
   },
   logo: { 
-    backgroundColor: 'red', 
-    width: '40%', 
+    width: '40%',
     aspectRatio: 1 
+  },
+  logoImg: {
+    width: '100%',
+    height: '100%'
   },
   loginCard: {
     marginVertical: 50, 

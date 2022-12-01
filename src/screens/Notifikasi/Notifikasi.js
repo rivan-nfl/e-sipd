@@ -1,45 +1,53 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native'
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header.js'
-
-const dummyNotif = [
-  {
-    title: 'Notif Title',
-    description: 'Notif Description'
-  },
-  {
-    title: 'Notif Title',
-    description: 'Notif Description'
-  },
-  {
-    title: 'Notif Title',
-    description: 'Notif Description'
-  },
-]
+import { useDispatch, useSelector } from 'react-redux'
+import { editNotification, getAllNotifications } from '../../service/notificationService'
 
 const Notifikasi = ({ navigation }) => {
-  return (
-    <View style={{ flex: 1 }}>
-      {/* Header */}
-      <Header title='Notifikasi' />
-      {/* Content */}
-      <View style={styles.content}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          { dummyNotif.map((item, index) => (
-            <Pressable
-              key={index}
-              style={styles.notifCard}
-              onPress={() => navigation.navigate('Notifikasi Detail')}
-            >
-              <Text style={styles.notifTitle}>{item.title}</Text>
-              <Text style={styles.notifDesc}>{item.description}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
+    const dispatch = useDispatch()
+    const token = useSelector(state => state.auth.token)
+    const userRole = useSelector(state => state.user.role)
+    const dataNotifikasi = useSelector(state => state.notifikasi)
+
+    const editNotif = (id) => {
+      editNotification(id, token, { status: userRole != 'admin' ? "open" : "close" })
+      .then(response => {
+        getAllNotifications(token).then(res => dispatch({type: 'SAVE_NOTIFIKASI', data: res.data.data}))
+      })
+      .catch(err => {
+          console.log('err =', err.response.data)
+          alert(err.response.data.message)
+      })
+    }
+    return (
+      <View style={{ flex: 1 }}>
+        {/* Header */}
+        <Header title='Notifikasi' />
+        {/* Content */}
+        <View style={styles.content}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            { dataNotifikasi.map((item, index) => (
+              <Pressable
+                key={index}
+                style={styles.notifCard}
+                onPress={() => {
+                  editNotif(item.id)
+                  navigation.navigate('Notifikasi Detail', item)
+                }}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  { item.status == 'close' && <View style={{ width: 20, height: 20, borderRadius: 20, marginRight: 10, backgroundColor: COLORS.RED }} /> }
+                  <Text style={styles.notifTitle}>{item.title}</Text>
+                </View>
+                <Text style={styles.notifDesc}>{item.deskripsi}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
       </View>
-    </View>
-  )
+    )
 }
 
 export default Notifikasi

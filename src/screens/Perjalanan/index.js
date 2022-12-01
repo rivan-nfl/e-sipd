@@ -1,37 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useSelector } from 'react-redux'
-import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
 
+import { getAllPerjalanan } from '../../service/e-sipdService';
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 
 const DaftarPerjalanan = ({ navigation }) => {
+    const dispatch = useDispatch()
+    const role = useSelector(state => state.user.role)
     const token = useSelector(state => state.auth.token)
+    const dataPerjalanan = useSelector(state => state.perjalanan)
 
-    const [dataDipa, setDataDipa] = useState([])
-
-    const getAllDipa = () => {
-        axios({
-            method: 'GET',
-            url: `http://10.0.2.2:4000/users`,
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            params: {
-                role: 'dipa'
-            },
-        })
+    // Loads
+    useEffect(() => {
+        getAllPerjalanan(token)
         .then(res => {
-            setDataDipa(res.data.data)
+            dispatch({type: 'SAVE_PERJALANAN', data: res.data.data})
         })
         .catch(err => {
             console.log('err =', err.response.data)
             alert(err.response.data.message)
         })
-    }
-
-    useEffect(() => getAllDipa(), [])
+    }, [])
 
     return (
         <View style={{ flex: 1 }}>
@@ -40,16 +31,15 @@ const DaftarPerjalanan = ({ navigation }) => {
         {/* Content */}
             <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
             <View style={styles.content}>
-                { dataDipa.map((item, index) => (
+                { dataPerjalanan.map((item, index) => (
                     <Pressable
                         key={index}
                         style={styles.card}
-                        onPress={() => navigation.navigate('Detail Dipa', item)}
+                        onPress={() => navigation.navigate('Detail Perjalanan', item)}
                     >
-                        <Text style={styles.anggotaTitle}>{item.nama}</Text>
-                        <Text style={styles.anggotaTitle}>{item.nrp}</Text>
-                        <Text style={styles.anggotaText}>{item.pangkat}</Text>
-                        <Text style={styles.anggotaText}>{item.bagian}</Text>
+                        <Text style={styles.anggotaTitle}>{item.nomor_sprint}</Text>
+                        <Text style={styles.anggotaTitle}>{item.nomor_sppd}</Text>
+                        <Text style={styles.anggotaText}>{item.status}</Text>
                     </Pressable>
                 ))}
             </View>
