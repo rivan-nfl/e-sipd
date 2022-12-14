@@ -5,6 +5,8 @@ import Home from '../screens/Home';
 import DaftarAnggota from '../screens/Anggota/DaftarAnggota';
 import DaftarDipa from '../screens/DIPA/DaftarDipa';
 import DaftarPerjalanan from '../screens/Perjalanan';
+import AnggaranPerjalanan from '../screens/Perjalanan/AnggaranPerjalanan';
+import LaporanPerjalanan from '../screens/Perjalanan/LaporanPerjalanan';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +17,8 @@ const HomeStack = () => {
             <Stack.Screen name="Daftar Anggota" component={DaftarAnggota} />
             <Stack.Screen name="Daftar Dipa" component={DaftarDipa} />
             <Stack.Screen name="Daftar Perjalanan" component={DaftarPerjalanan} />
+            <Stack.Screen name="Anggaran Perjalanan" component={AnggaranPerjalanan} />
+            <Stack.Screen name="Laporan Perjalanan" component={LaporanPerjalanan} />
         </Stack.Navigator>
     )
 }

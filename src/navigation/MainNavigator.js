@@ -10,7 +10,6 @@ import NotificationStack from './NotificationStack.js';
 import Akun from '../screens/Akun';
 import HomeStack from './HomeStack';
 
-
 const Tab = createBottomTabNavigator();
 
 const MainNavigator = () => {
@@ -20,15 +19,7 @@ const MainNavigator = () => {
     // Loads
     useEffect(() => {
         getAllNotifications(token)
-        .then(res => {
-          dispatch({type: 'SAVE_NOTIFIKASI', data: res.data.data})
-        //   for(let i = 0; i < res.data.data.length; i++) {
-        //     if(res.data.data[i].status == 'close') {
-        //         setNewNotif(true)
-        //         break
-        //     }
-        //   }
-        })
+        .then(res => dispatch({type: 'SAVE_NOTIFIKASI', data: res.data.data}) )
         .catch(err => {
             console.log('err =', err.response.data)
             alert(err.response.data.message)

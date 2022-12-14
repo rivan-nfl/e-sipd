@@ -1,17 +1,6 @@
 import axios from "axios"
 import { baseUrl } from "./apiConfig"
 
-const getAllTransportasi = (token, params) => {
-    return axios({
-        method: 'GET',
-        url: `${baseUrl}/e-sipd/transportasi`,
-        params: { ...params },
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-}
-
 const getAllPerjalanan = (token, params) => {
     return axios({
         method: 'GET',
@@ -45,9 +34,32 @@ const updatePerjalanan = (token, id, data) => {
     })
 }
 
+const getAllTransportasi = (token, params) => {
+    return axios({
+        method: 'GET',
+        url: `${baseUrl}/e-sipd/transportasi`,
+        params: { ...params },
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+}
+
+const getAnggaran = (token, params) => {
+    return axios({
+        method: 'GET',
+        url: `${baseUrl}/e-sipd/anggaran`,
+        params: { ...params },
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+}
+
 export {
-    getAllTransportasi,
     getAllPerjalanan,
     createPerjalanan,
     updatePerjalanan,
+    getAllTransportasi,
+    getAnggaran,
 }

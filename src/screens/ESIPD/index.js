@@ -52,7 +52,6 @@ const ESIPD = ({ navigation }) => {
 
     // Perjalanan Dinas
     const [jenisPerjalanan, setJenisPerjalanan] = useState();
-    const [selectedJenisPerjalanan, setSelectedJenisPerjalanan] = useState();
     const [daftarJenisPerjalanan, setDaftarJenisPerjalanan] = useState([
         {
             jenis: 'Pilih Jenis Perjalanan'
@@ -69,7 +68,6 @@ const ESIPD = ({ navigation }) => {
 
     // Provinsi
     const [provinsi, setProvinsi] = useState();
-    const [selectedProvinsi, setSelectedProvinsi] = useState();
     const [daftarProvinsi, setDaftarProvinsi] = useState([
         {
             provinsi: 'Pilih Provinsi'
@@ -131,59 +129,48 @@ const ESIPD = ({ navigation }) => {
 
     // Transportasi
     const [transportasi, setTransportasi] = useState();
-    const [selectedTransportasi, setSelectedTransportasi] = useState();
-    const [daftarTransportasi, setDaftarTransportasi] = useState([
-        {
-            nama: 'Pilih Transportasi'
-        },
-    ]);
+    const [daftarTransportasi, setDaftarTransportasi] = useState([]);
 
     // Lokasi Asal
     const [lokasiAsal, setLokasiAsal] = useState();
-    const [selectedLokasiAsal, setSelectedLokasiAsal] = useState();
-    const [daftarLokasiAsal, setDaftarLokasiAsal] = useState([
-        {
-            lokasi_awal: 'Pilih Lokasi Asal'
-        }
-    ]);
+    const [daftarLokasiAsal, setDaftarLokasiAsal] = useState([]);
 
     // Lokasi Tujuan
     const [lokasiTujuan, setLokasiTujuan] = useState();
-    const [selectedLokasiTujuan, setSelectedLokasiTujuan] = useState();
-    const [daftarLokasiTujuan, setDaftarLokasiTujuan] = useState([
-        {
-            lokasi_tujuan: 'Pilih Tujuan'
-        }
-    ]);
+    const [daftarLokasiTujuan, setDaftarLokasiTujuan] = useState([]);
 
     // Functions
     const handleSubmit = () => {
-        const data = {
-            keterangan,
-            nomor_sprint: nomorSprint,
-            nomor_sppd: nomorSPPD,
-            jenis_perjalanan: jenisPerjalanan,
-            daerah_tujuan: provinsi,
-            tgl_berangkat: String(tanggalBerangkat),
-            tgl_kembali: String(tanggalKembali),
-            penerima: anggota
+        if(!jarak) {
+            alert('Transportasi tidak tersedia !')
+        } else {
+            const data = {
+                keterangan,
+                nomor_sprint: nomorSprint,
+                nomor_sppd: nomorSPPD,
+                jenis_perjalanan: jenisPerjalanan,
+                daerah_tujuan: provinsi,
+                tgl_berangkat: String(tanggalBerangkat),
+                tgl_kembali: String(tanggalKembali),
+                penerima: anggota
+            }
+    
+            createPerjalanan(token, data)
+            .then(res => {
+                // console.log(res.data.data)
+                Alert.alert(
+                    "Sukses",
+                    "Berhasil Membuat Perjalanan",
+                    [
+                        { text: "Kembali ke Beranda", onPress: () => navigation.navigate("Home") }
+                    ]
+                );
+            })
+            .catch(err => {
+                console.log('err =', err.response.data)
+                alert(err.response.data.message)
+            })
         }
-
-        createPerjalanan(token, data)
-        .then(res => {
-            // console.log(res.data.data)
-            Alert.alert(
-                "Sukses",
-                "Berhasil Membuat Perjalanan",
-                [
-                    { text: "Kembali ke Beranda", onPress: () => navigation.navigate("Home") }
-                ]
-            );
-        })
-        .catch(err => {
-            console.log('err =', err.response.data)
-            alert(err.response.data.message)
-        })
     }
 
     // Loads
@@ -432,14 +419,21 @@ const ESIPD = ({ navigation }) => {
                                 setTransportasi(itemValue)
                             }}
                         >   
-                            { daftarTransportasi.map((item, index) =>
-                                <Picker.Item 
-                                    key={index} 
-                                    label={item.nama} 
-                                    value={item.nama} 
-                                    style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
+                            { transportasi
+                                ? daftarTransportasi.map((item, index) =>
+                                    <Picker.Item 
+                                        key={index} 
+                                        label={item.nama} 
+                                        value={item.nama} 
+                                        style={{ fontSize: 17, color: COLORS.BLACK }} 
+                                    />
+                                )
+                                : <Picker.Item 
+                                    label={'Pilih Transportasi'}
+                                    value={''} 
+                                    style={{ fontSize: 17, color: COLORS.GRAY }} 
                                 />
-                            )}
+                            }
                         </Picker>
                     </View>
                 </View>
@@ -454,14 +448,21 @@ const ESIPD = ({ navigation }) => {
                                 setLokasiAsal(itemValue)
                             }}
                         >   
-                            { daftarLokasiAsal.map((item, index) =>
-                                <Picker.Item 
-                                    key={index} 
-                                    label={item.lokasi_awal} 
-                                    value={item.lokasi_awal} 
-                                    style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
+                            { lokasiAsal
+                                ? daftarLokasiAsal.map((item, index) =>
+                                    <Picker.Item 
+                                        key={index} 
+                                        label={item.lokasi_awal} 
+                                        value={item.lokasi_awal} 
+                                        style={{ fontSize: 17, color: COLORS.BLACK }} 
+                                    />
+                                )
+                                : <Picker.Item 
+                                    label={'Pilih Lokasi Asal'}
+                                    value={''} 
+                                    style={{ fontSize: 17, color: COLORS.GRAY }} 
                                 />
-                            )}
+                            }
                         </Picker>
                     </View>
                 </View>
@@ -476,14 +477,21 @@ const ESIPD = ({ navigation }) => {
                                 setLokasiTujuan(itemValue)
                             }}
                         >   
-                            { daftarLokasiTujuan.map((item, index) =>
-                                <Picker.Item 
-                                    key={index} 
-                                    label={item.lokasi_tujuan} 
-                                    value={item.lokasi_tujuan} 
-                                    style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
-                                />
-                            )}
+                            { lokasiTujuan
+                                ? daftarLokasiTujuan.map((item, index) =>
+                                    <Picker.Item 
+                                        key={index} 
+                                        label={item.lokasi_tujuan} 
+                                        value={item.lokasi_tujuan} 
+                                        style={{ fontSize: 17, color: COLORS.BLACK }} 
+                                    />
+                                )
+                                : <Picker.Item 
+                                label={'Pilih Tujuan'}
+                                value={''} 
+                                style={{ fontSize: 17, color: COLORS.GRAY }} 
+                            />
+                            }
                         </Picker>
                     </View>
                 </View>

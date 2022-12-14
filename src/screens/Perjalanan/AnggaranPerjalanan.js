@@ -1,22 +1,20 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
-import { getAllPerjalanan } from '../../service/e-sipdService';
+import { getAnggaran } from '../../service/e-sipdService';
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 
-const DaftarPerjalanan = ({ navigation }) => {
-    const dispatch = useDispatch()
-    const role = useSelector(state => state.user.role)
+const AnggaranPerjalanan = () => {
     const token = useSelector(state => state.auth.token)
-    const dataPerjalanan = useSelector(state => state.perjalanan)
+    const [dataPerjalanan, setDataPerjalanan] = useState([])
 
     // Loads
     useEffect(() => {
-        getAllPerjalanan(token)
+        getAnggaran(token)
         .then(res => {
-            dispatch({type: 'SAVE_PERJALANAN', data: res.data.data})
+            setDataPerjalanan(res.data.data)
         })
         .catch(err => {
             console.log('err =', err.response.data)
@@ -27,7 +25,7 @@ const DaftarPerjalanan = ({ navigation }) => {
     return (
         <View style={{ flex: 1 }}>
         {/* Header */}
-        <Header title='Daftar Perjalanan' />
+        <Header title='Anggaran Perjalanan' />
         {/* Content */}
             <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
             <View style={styles.content}>
@@ -35,11 +33,10 @@ const DaftarPerjalanan = ({ navigation }) => {
                     <Pressable
                         key={index}
                         style={styles.card}
-                        onPress={() => navigation.navigate('Detail Perjalanan', item)}
                     >
-                        <Text style={styles.anggotaTitle}>{item.nomor_sprint}</Text>
-                        <Text style={styles.anggotaTitle}>{item.nomor_sppd}</Text>
-                        <Text style={styles.anggotaText}>{item.status}</Text>
+                        <Text style={styles.anggotaTitle}>{item.type}</Text>
+                        <Text style={styles.anggotaTitle}>{item.tingkat}</Text>
+                        <Text style={styles.anggotaText}>{item.anggaran}</Text>
                     </Pressable>
                 ))}
             </View>
@@ -48,7 +45,7 @@ const DaftarPerjalanan = ({ navigation }) => {
     )
 }
 
-export default DaftarPerjalanan
+export default AnggaranPerjalanan
 
 const styles = StyleSheet.create({
     content: {

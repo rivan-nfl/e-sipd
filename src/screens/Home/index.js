@@ -24,7 +24,17 @@ const adminMenu = [
     path: 'Daftar Dipa'
   },
 ]
-const dummyAdminBottomMenu = ['Anggaran Perjalanan Dinas', 'Laporan Perjalanan Dinas']
+
+const adminBottomMenu = [
+  {
+    label: 'Anggaran Perjalanan Dinas',
+    path: 'Anggaran Perjalanan'
+  },
+  {
+    label: 'Laporan Perjalanan Dinas',
+    path: 'Laporan Perjalanan'
+  },
+]
 
 const dipaBottomMenu = [
   {
@@ -33,12 +43,12 @@ const dipaBottomMenu = [
   },
   {
     label: 'Anggaran Perjalanan Dinas',
-    path: ''
+    path: 'Anggaran Perjalanan'
   },
   {
     label: 'Laporan Perjalanan Dinas',
-    path: ''
-  }
+    path: 'Laporan Perjalanan'
+  },
 ]
 
 const anggotaBottomMenu = [
@@ -48,8 +58,8 @@ const anggotaBottomMenu = [
   },
   {
     label: 'Laporan Perjalanan Dinas',
-    path: ''
-  },
+    path: 'Laporan Perjalanan'
+  }
 ]
 
 const Home = ({ navigation }) => {
@@ -88,10 +98,14 @@ const Home = ({ navigation }) => {
         </View>
         {/* Admin Bottom Menu */}
         <View style={styles.bottomMenu}>
-          { role == 'admin' && dummyAdminBottomMenu.map((item, index) => (
-            <View key={index} style={styles.menuItems}>
-              <Text style={styles.menuText}>{item}</Text>
-            </View>
+          { role == 'admin' && adminBottomMenu.map((item, index) => (
+            <Pressable 
+              key={index} 
+              style={styles.menuItems}
+              onPress={() => navigation.navigate(item.path)}
+            >
+              <Text style={styles.menuText}>{item.label}</Text>
+            </Pressable>
           ))}
         </View>
         {/* DIPA Bottom Menu */}
@@ -158,8 +172,8 @@ const styles = StyleSheet.create({
   menuItems: {
     width: '45%', 
     borderRadius: 8, 
-    borderWidth: 1, 
-    borderColor: COLORS.BLACK, 
+    backgroundColor: COLORS.WHITE,
+    elevation: 10,
     padding: 20, 
     justifyContent: 'center', 
     alignItems: 'center', 

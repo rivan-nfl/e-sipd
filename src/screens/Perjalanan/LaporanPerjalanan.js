@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -6,28 +6,26 @@ import { getAllPerjalanan } from '../../service/e-sipdService';
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 
-const DaftarPerjalanan = ({ navigation }) => {
-    const dispatch = useDispatch()
-    const role = useSelector(state => state.user.role)
+const LaporanPerjalanan = ({ navigation }) => {
     const token = useSelector(state => state.auth.token)
-    const dataPerjalanan = useSelector(state => state.perjalanan)
+    const [dataPerjalanan, setDataPerjalanan] = useState([])
 
     // Loads
-    useEffect(() => {
-        getAllPerjalanan(token)
-        .then(res => {
-            dispatch({type: 'SAVE_PERJALANAN', data: res.data.data})
-        })
-        .catch(err => {
-            console.log('err =', err.response.data)
-            alert(err.response.data.message)
-        })
-    }, [])
+    // useEffect(() => {
+    //     getAllPerjalanan(token)
+    //     .then(res => {
+    //         console.log(res.data);
+    //     })
+    //     .catch(err => {
+    //         console.log('err =', err.response.data)
+    //         alert(err.response.data.message)
+    //     })
+    // }, [])
 
     return (
         <View style={{ flex: 1 }}>
         {/* Header */}
-        <Header title='Daftar Perjalanan' />
+        <Header title='Laporan Perjalanan' />
         {/* Content */}
             <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
             <View style={styles.content}>
@@ -35,7 +33,7 @@ const DaftarPerjalanan = ({ navigation }) => {
                     <Pressable
                         key={index}
                         style={styles.card}
-                        onPress={() => navigation.navigate('Detail Perjalanan', item)}
+                        // onPress={() => navigation.navigate('Detail Perjalanan', item)}
                     >
                         <Text style={styles.anggotaTitle}>{item.nomor_sprint}</Text>
                         <Text style={styles.anggotaTitle}>{item.nomor_sppd}</Text>
@@ -48,7 +46,7 @@ const DaftarPerjalanan = ({ navigation }) => {
     )
 }
 
-export default DaftarPerjalanan
+export default LaporanPerjalanan
 
 const styles = StyleSheet.create({
     content: {
