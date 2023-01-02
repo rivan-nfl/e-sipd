@@ -34,6 +34,17 @@ const updatePerjalanan = (token, id, data) => {
     })
 }
 
+const editPerjalanan = (token, id, data) => {
+    return axios({
+        method: 'PUT',
+        url: `${baseUrl}/e-sipd/update/${id}`,
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        data: { ...data }
+    })
+}
+
 const getAllTransportasi = (token, params) => {
     return axios({
         method: 'GET',
@@ -60,6 +71,7 @@ export {
     getAllPerjalanan,
     createPerjalanan,
     updatePerjalanan,
+    editPerjalanan,
     getAllTransportasi,
     getAnggaran,
 }

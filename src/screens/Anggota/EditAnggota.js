@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
-import DropDownPicker from 'react-native-dropdown-picker';
+import { Picker } from '@react-native-picker/picker';
+
 import { useDispatch, useSelector } from 'react-redux';
 
 import { editAnggota, getProfile } from '../../service/userService';
@@ -17,8 +18,7 @@ const EditAnggota = ({ route, navigation }) => {
     const { params } = route;
 
     // Picker
-    const [open, setOpen] = useState(false);
-    const [items, setItems] = useState([
+    const [daftarPangkat, setDaftarPangkat] = useState([
       {label: 'Letnan', value: 'Letnan'},
       {label: 'Kapten', value: 'Kapten'},
       {label: 'Kolonel', value: 'Kolonel'},
@@ -37,7 +37,6 @@ const EditAnggota = ({ route, navigation }) => {
         nrp,
         pangkat,
         jabatan,
-        // bagian,
         // image
       })
       .then(response => {
@@ -86,18 +85,21 @@ const EditAnggota = ({ route, navigation }) => {
               </View>
               <View style={styles.menu}>
                 <Text style={styles.menuTxt}>Pangkat</Text>
-                <DropDownPicker
-                  placeholder='Pilih Pangkat'
-                  placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                  style={{ borderColor: COLORS.GRAY }}
-                  labelStyle={{ fontSize: 17 }}
-                  open={open}
-                  value={pangkat}
-                  items={items}
-                  setOpen={setOpen}
-                  setValue={setPangkat}
-                  setItems={setItems}
-                />
+                <View style={styles.picker}>
+                  <Picker
+                    selectedValue={pangkat}
+                    onValueChange={itemValue => setPangkat(itemValue)}
+                  >
+                    { daftarPangkat.map((item, index) => (
+                      <Picker.Item
+                          key={index}
+                          label={item.label} 
+                          value={item.value} 
+                          style={{ fontSize: 17 }} 
+                      />
+                    ))}
+                  </Picker>
+                </View>
               </View>
               <View style={styles.menu}>
                 <Text style={styles.menuTxt}>Jabatan</Text>
@@ -148,6 +150,11 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       color: COLORS.BLACK,
       marginBottom: 5
+    },
+    picker: {
+      borderColor: COLORS.GRAY, 
+      borderWidth: 1, 
+      borderRadius: 8,
     },
     footer: {
       flexDirection: 'row',

@@ -54,6 +54,7 @@ const ESIPD = ({ navigation }) => {
     const [jenisPerjalanan, setJenisPerjalanan] = useState();
     const [daftarJenisPerjalanan, setDaftarJenisPerjalanan] = useState([
         {
+            id: null,
             jenis: 'Pilih Jenis Perjalanan'
         },
         {
@@ -66,66 +67,15 @@ const ESIPD = ({ navigation }) => {
         },
     ]);
 
+    const [daftarTujuan, setDaftarTujuan] = useState([]);
+
     // Provinsi
     const [provinsi, setProvinsi] = useState();
-    const [daftarProvinsi, setDaftarProvinsi] = useState([
-        {
-            provinsi: 'Pilih Provinsi'
-        },
-        {
-            id: 'jawa_timur',
-            provinsi: 'Jawa Timur'
-        },
-        {
-            id: 'jawa_tengah',
-            provinsi: 'Jawa Tengah',
-        },
-    ]);
+    const [daftarProvinsi, setDaftarProvinsi] = useState([{ provinsi: 'Pilih Provinsi' }]);
 
     // Kota
     const [kota, setKota] = useState();
-    const [selectedKota, setSelectedKota] = useState([]);
-    const [daftarKota, setDaftarKota] = useState([
-        {
-            kota: 'Pilih Kota'
-        },
-        {
-            kotaId: 1,
-            provinsiId: 'jawa_timur',
-            provinsi: 'Jawa Timur',
-            kota: 'Surabaya'
-        },
-        {
-            kotaId: 2,
-            provinsiId: 'jawa_timur',
-            provinsi: 'Jawa Timur',
-            kota: 'Madiun'
-        },
-        {
-            kotaId: 3,
-            provinsiId: 'jawa_timur',
-            provinsi: 'Jawa Timur',
-            kota: 'Jember'
-        },
-        {
-            kotaId: 4,
-            provinsiId: 'jawa_tengah',
-            provinsi: 'Jawa Tengah',
-            kota: 'Semarang'
-        },
-        {
-            kotaId: 5,
-            provinsiId: 'jawa_tengah',
-            provinsi: 'Jawa Tengah',
-            kota: 'Solo'
-        },
-        {
-            kotaId: 6,
-            provinsiId: 'jawa_tengah',
-            provinsi: 'Jawa Tengah',
-            kota: 'Tegal'
-        }
-    ]);
+    const [daftarKota, setDaftarKota] = useState([]);
 
     // Transportasi
     const [transportasi, setTransportasi] = useState();
@@ -150,14 +100,16 @@ const ESIPD = ({ navigation }) => {
                 nomor_sppd: nomorSPPD,
                 jenis_perjalanan: jenisPerjalanan,
                 daerah_tujuan: provinsi,
+                kota_asal: lokasiAsal,
+                kota_tujuan: kota.lokasi_tujuan,
                 tgl_berangkat: String(tanggalBerangkat),
                 tgl_kembali: String(tanggalKembali),
+                transportasi: transportasi,
                 penerima: anggota
             }
     
             createPerjalanan(token, data)
             .then(res => {
-                // console.log(res.data.data)
                 Alert.alert(
                     "Sukses",
                     "Berhasil Membuat Perjalanan",
@@ -175,16 +127,54 @@ const ESIPD = ({ navigation }) => {
 
     // Loads
     useEffect(() => {
+        if(jenisPerjalanan) {
+            getAllTransportasi(token, {
+                type: jenisPerjalanan
+            })
+            .then(res => {
+                const newDaftarProvinsi = new Array()
+                for(let i = 0; i < res.data.data.length; i++) {
+                    const newProvinsi = newDaftarProvinsi.find(item => item.provinsi == res.data.data[i].provinsi)
+                    !newProvinsi ? newDaftarProvinsi.push(res.data.data[i]) : null
+                }
+                setDaftarProvinsi([{provinsi: 'Pilih Provinsi'}, ...newDaftarProvinsi])
+                setDaftarTujuan(res.data.data)
+                if(jenisPerjalanan == 'dalam_kota') {
+                    setProvinsi(newDaftarProvinsi[0].provinsi)
+                    setDaftarKota(res.data.data)
+                } else {
+                    setProvinsi()
+                    setDaftarKota([{lokasi_tujuan: 'Pilih Kota'}])
+                }
+            })
+            .catch(err => {
+                console.log('err =', err.response.data)
+                alert(err.response.data.message)
+            })
+        }
+    }, [jenisPerjalanan])
+
+    useEffect(() => {
         if(provinsi) {
-            setSelectedKota(daftarKota.filter(item => item.provinsiId == provinsi))
-            setKota((daftarKota.filter(item => item.provinsiId == provinsi))[0].kotaId)
+            if(jenisPerjalanan == 'dalam_kota') {
+                setKota(daftarTujuan[0])
+                setDaftarKota(daftarTujuan)
+            } else if(jenisPerjalanan == 'luar_kota' && provinsi != 'Pilih Provinsi') {
+                const newDaftarTujuan = daftarTujuan.filter(item => item.provinsi == provinsi);
+                setKota(newDaftarTujuan[0])
+                setDaftarKota(newDaftarTujuan)
+            } else {
+                setDaftarKota([{lokasi_tujuan: 'Pilih Kota'}])
+            }
         }
     }, [provinsi])
 
     useEffect(() => {
-        if(provinsi && kota) {
+        if(kota) {
             getAllTransportasi(token, {
-                type: jenisPerjalanan
+                type: jenisPerjalanan,
+                lokasi_asal: kota.lokasi_awal,
+                lokasi_tujuan: kota.lokasi_tujuan,
             })
             .then(res => {
                 let newTransportasi = []
@@ -209,14 +199,13 @@ const ESIPD = ({ navigation }) => {
 
                 setDaftarLokasiTujuan(newLokasiTujuan)
                 setLokasiTujuan(newLokasiTujuan[0].lokasi_tujuan)
-
             })
             .catch(err => {
-                console.log('err =', err.response.data)
+                console.log('err =', err.response.data[0])
                 alert(err.response.data.message)
             })
         }
-    }, [provinsi, kota])
+    }, [kota])
 
     useEffect(() => {
         if(transportasi, lokasiAsal, lokasiTujuan) {
@@ -226,7 +215,9 @@ const ESIPD = ({ navigation }) => {
                 lokasi_tujuan: lokasiTujuan || daftarLokasiTujuan[0].lokasi_tujuan,
                 transportasi
             })
-            .then(res => res.data.data.length ? setJarak(res.data.data[0].jarak) : setJarak(0))
+            .then(res => {
+                res.data.data.length ? setJarak(res.data.data[0].jarak) : setJarak(0)
+            })
             .catch(err => {
                 console.log('err =', err.response.data[0])
                 alert(err.response.data.message)
@@ -251,9 +242,7 @@ const ESIPD = ({ navigation }) => {
             <View style={{ width: '90%' }}>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nama Anggota</Text>
-                    <View
-                        style={styles.picker}
-                    >
+                    <View style={styles.picker}>
                         <Picker
                             selectedValue={anggota}
                             onValueChange={itemValue => {
@@ -291,7 +280,7 @@ const ESIPD = ({ navigation }) => {
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nomor SPPD</Text>
-                    <Input placeholder={'Nomor Sprint...'} style={{ flex: 1 }} value={nomorSPPD} onChangeText={text => setNomorSPPD(text)} />
+                    <Input placeholder={'Nomor SPPD...'} style={{ flex: 1 }} value={nomorSPPD} onChangeText={text => setNomorSPPD(text)} />
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Maksud Perjalanan Dinas</Text>
@@ -336,14 +325,21 @@ const ESIPD = ({ navigation }) => {
                                 setProvinsi(itemValue)
                             }}
                         >   
-                            { daftarProvinsi.map((item, index) =>
-                                <Picker.Item 
-                                    key={index} 
-                                    label={item.provinsi} 
-                                    value={item.id} 
-                                    style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
+                            { jenisPerjalanan
+                                ? daftarProvinsi.map((item, index) =>
+                                    <Picker.Item 
+                                        key={index} 
+                                        label={item.provinsi} 
+                                        value={item.provinsi} 
+                                        style={{ fontSize: 17, color: index == 0 ? COLORS.GRAY : COLORS.BLACK }} 
+                                    />
+                                )
+                                : <Picker.Item 
+                                    label={'Pilih Provinsi'}
+                                    value={''} 
+                                    style={{ fontSize: 17, color: COLORS.GRAY }} 
                                 />
-                            )}
+                            }
                         </Picker>
                     </View>
                 </View>
@@ -357,17 +353,17 @@ const ESIPD = ({ navigation }) => {
                                 setKota(itemValue)
                             }}
                         >   
-                            { provinsi
-                                ? selectedKota.map((item, index) => 
+                            { provinsi && provinsi != 'Pilih Provinsi'
+                                ? daftarKota.map((item, index) => 
                                     <Picker.Item 
                                         key={index} 
-                                        label={item.kota} 
-                                        value={item.kotaId} 
+                                        label={item.lokasi_tujuan} 
+                                        value={item} 
                                         style={{ fontSize: 17, color: COLORS.BLACK }} 
                                     />
                                 )
                                 : <Picker.Item 
-                                    label={'Pilih Provinsi'}
+                                    label={'Pilih Kota'}
                                     value={''} 
                                     style={{ fontSize: 17, color: COLORS.GRAY }} 
                                 />
@@ -498,7 +494,6 @@ const ESIPD = ({ navigation }) => {
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Jarak</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        {/* <Input placeholder={'Jarak'} keyboardType='number-pad' style={{ flex: 1 }} /> */}
                         <Text style={[styles.text, { flex: 1 }]}>{jarak}</Text>
                         <Text style={[styles.menuTxt, { marginLeft: 10 }]}>KM</Text>
                     </View>

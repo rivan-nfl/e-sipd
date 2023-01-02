@@ -2,9 +2,22 @@ import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
+import CustomButton from '../../components/Button'
+import { getAllPerjalanan } from '../../service/e-sipdService'
+import { useSelector } from 'react-redux'
 
-const NotifikasiDetail = ({ route }) => {
+const NotifikasiDetail = ({ route, navigation }) => {
   const { params } = route
+  const token = useSelector(state => state.auth.token)
+
+  const handleDetailPerjalanan = () => {
+    getAllPerjalanan(token, { perjalanan_id: params.id_perjalanan })
+    .then(res => navigation.navigate('Detail Perjalanan', res.data.data[0]) )
+    .catch(err => {
+        console.log('err =', err.response.data)
+        alert(err.response.data.message)
+    })
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -23,6 +36,21 @@ const NotifikasiDetail = ({ route }) => {
         <View style={styles.notifContent}>
           <Text style={styles.contentText}>{params.detail}</Text>
         </View>
+        {
+          params.perjalanan_status == 'rejected'
+          ? (
+          <View style={styles.footer}>
+            <CustomButton title='Edit Perjalanan' buttonStyle={{ width: '100%' }} onPress={() => navigation.navigate('Edit ESIPD', params.id_perjalanan)} />
+          </View>
+          )
+          : params.perjalanan_status == 'pending'
+          ? (
+            <View style={styles.footer}>
+            <CustomButton title='Lihat Detail Perjalanan' buttonStyle={{ width: '100%' }} onPress={handleDetailPerjalanan} />
+          </View>
+          )
+          : null
+        }
       </View>
     </View>
   )
@@ -49,6 +77,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.GRAY,
     padding: 16,
+    marginBottom: 18
   },
   titleText: {
     fontSize: 18,
@@ -59,5 +88,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.BLACK,
     lineHeight: 20
-  }
+  },
+  footer: {
+    flexDirection: 'row', 
+    width: '100%',
+    justifyContent: 'space-around', 
+  },
 })

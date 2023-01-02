@@ -21,6 +21,16 @@ const getProfile = (id, token) => {
     })
 }
 
+const getUserById = (token, userId) => {
+    return axios({
+        method: 'GET',
+        url: `${baseUrl}/users/${userId}`,
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+}
+
 const editAnggota = (id, token, data) => {
     return axios({
         method: 'PUT',
@@ -35,5 +45,6 @@ const editAnggota = (id, token, data) => {
 export {
     getAllUsers,
     getProfile,
+    getUserById,
     editAnggota
 }

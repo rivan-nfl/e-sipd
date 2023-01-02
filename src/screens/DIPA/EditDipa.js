@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Picker } from '@react-native-picker/picker';
+
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
 import { editAnggota, getProfile } from '../../service/userService';
@@ -17,9 +19,8 @@ const EditDipa = ({ route, navigation }) => {
     const { params } = route;
 
     // Pangkat
-    const [open, setOpen] = useState(false);
     const [pangkat, setPangkat] = useState(params.pangkat)
-    const [items, setItems] = useState([
+    const [daftarPangkat, setDaftarPangkat] = useState([
       {label: 'Letnan', value: 'Letnan'},
       {label: 'Kapten', value: 'Kapten'},
       {label: 'Kolonel', value: 'Kolonel'},
@@ -27,7 +28,6 @@ const EditDipa = ({ route, navigation }) => {
     ]);
 
     // Bagian
-    const [openBagian, setOpenBagian] = useState(false);
     const [bagian, setBagian] = useState(params.bagian)
     const [itemsBagian, setItemsBagian] = useState([
       {label: 'Manajemen', value: 'Manajemen'},
@@ -89,33 +89,39 @@ const EditDipa = ({ route, navigation }) => {
               </View>
               <View style={[styles.menu, {zIndex: 2}]}>
                 <Text style={styles.menuTxt}>Pangkat</Text>
-                <DropDownPicker
-                  placeholder='Pilih Pangkat'
-                  placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                  style={{ borderColor: COLORS.GRAY }}
-                  labelStyle={{ fontSize: 17 }}
-                  open={open}
-                  value={pangkat}
-                  items={items}
-                  setOpen={setOpen}
-                  setValue={setPangkat}
-                  setItems={setItems}
-                />
+                <View style={styles.picker}>
+                  <Picker
+                    selectedValue={pangkat}
+                    onValueChange={itemValue => setPangkat(itemValue)}
+                  >
+                    { daftarPangkat.map((item, index) => (
+                      <Picker.Item
+                          key={index}
+                          label={item.label} 
+                          value={item.value} 
+                          style={{ fontSize: 17 }} 
+                      />
+                    ))}
+                  </Picker>
+                </View>
               </View>
               <View style={[styles.menu, {zIndex: 1}]}>
                 <Text style={styles.menuTxt}>Bagian</Text>
-                <DropDownPicker
-                  placeholder='Pilih Bagian'
-                  placeholderStyle={{ color: COLORS.GRAY, fontSize: 17 }}
-                  style={{ borderColor: COLORS.GRAY, zIndex: 100 }}
-                  labelStyle={{ fontSize: 17 }}
-                  open={openBagian}
-                  value={bagian}
-                  items={itemsBagian}
-                  setOpen={setOpenBagian}
-                  setValue={setBagian}
-                  setItems={setItemsBagian}
-                />
+                <View style={styles.picker}>
+                  <Picker
+                    selectedValue={bagian}
+                    onValueChange={itemValue => setBagian(itemValue)}
+                  >
+                    { itemsBagian.map((item, index) => (
+                      <Picker.Item
+                          key={index}
+                          label={item.label} 
+                          value={item.value} 
+                          style={{ fontSize: 17 }} 
+                      />
+                    ))}
+                  </Picker>
+                </View>
               </View>
               <View style={styles.menu}>
                 <Text style={styles.menuTxt}>Jabatan</Text>
@@ -142,6 +148,11 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       color: COLORS.BLACK,
       marginBottom: 5
+    },
+    picker: {
+      borderColor: COLORS.GRAY, 
+      borderWidth: 1, 
+      borderRadius: 8,
     },
     footer: {
       flexDirection: 'row',
