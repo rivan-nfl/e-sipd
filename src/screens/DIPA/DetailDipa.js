@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-import { getProfile } from '../../service/userService';
+import { deleteAnggota, getProfile } from '../../service/userService';
 
 import { COLORS } from '../../utils/colors';
 import Layout from '../../components/Layout';
@@ -13,6 +13,18 @@ const DetailDipa = ({ route, navigation }) => {
     const user = useSelector(state => state.userManagement)
 
     const { params } = route;
+
+    const handleDeleteAnggota = () => {
+        deleteAnggota(params.id, token)
+        .then(res => {
+            alert('Berhasil Menghapus Dipa')
+            navigation.navigate('Home')
+        })
+        .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+        })
+    }
 
     useEffect(() => {
         getProfile(params.id, token)
@@ -47,7 +59,7 @@ const DetailDipa = ({ route, navigation }) => {
             </View>
             <View style={styles.footer}>
                 <CustomButton title='Edit' buttonStyle={styles.editBtn} onPress={() => navigation.navigate('Edit Dipa', user)} />
-                <CustomButton title='Delete' buttonStyle={styles.deleteBtn} style={styles.editBtnTxt} />
+                <CustomButton title='Delete' buttonStyle={styles.deleteBtn} style={styles.editBtnTxt} onPress={handleDeleteAnggota} />
             </View>
         </Layout>
     )

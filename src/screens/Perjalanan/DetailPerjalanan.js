@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, ScrollView, Modal, TextInput } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getAllPerjalanan, updatePerjalanan } from '../../service/e-sipdService';
+import { getAllPerjalanan, getAnggaran, getPangkat, updatePerjalanan } from '../../service/e-sipdService';
 import { COLORS } from '../../utils/colors';
 
 import Layout from '../../components/Layout';
@@ -14,12 +14,14 @@ const DetailPerjalanan = ({ route }) => {
 
     const token = useSelector(state => state.auth.token)
     const userRole = useSelector(state => state.user.role)
+    const user = useSelector(state => state.user)
 
     const { params } = route;
 
     const [modalVisible, setModalVisible] = useState(false);
     const [keterangan, setKeterangan] = useState('')
     const [status, setStatus] = useState(params.status)
+    const [anggaran, setAnggaran] = useState('')
 
     const handleUpdatePerjalanan = (status) => {
         const data = {
@@ -46,6 +48,27 @@ const DetailPerjalanan = ({ route }) => {
             alert(err.response.data.message)
         })
     }
+
+    const handleGetAnggaran = () => {
+        getPangkat(token, { pangkat: user.pangkat })
+        .then(res => {
+            getAnggaran(token, { tingkat: res.data.data[0].tingkat })
+            .then(response => {
+                params?.jenis_perjalanan == 'luar_kota'
+                ? setAnggaran(response.data.data[0].anggaran_luar_kota)
+                : setAnggaran(response.data.data[0].anggaran_dalam_kota)
+                
+            })
+        })
+        .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+        })
+    }
+
+    useEffect(() => {
+        handleGetAnggaran()
+    }, [])
 
     return (
         <>
@@ -83,6 +106,10 @@ const DetailPerjalanan = ({ route }) => {
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Diajukan Pada</Text>
                     <Text style={styles.text}>{new Date(params.created_at).toLocaleDateString()}</Text>
+                </View>
+                <View style={styles.menu}>
+                    <Text style={styles.menuTxt}>Anggaran</Text>
+                    <Text style={styles.text}>Rp. {anggaran}</Text>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Status</Text>

@@ -67,6 +67,17 @@ const getAnggaran = (token, params) => {
     })
 }
 
+const getPangkat = (token, params) => {
+    return axios({
+        method: 'GET',
+        url: `${baseUrl}/e-sipd/pangkat`,
+        params: { ...params },
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+}
+
 export {
     getAllPerjalanan,
     createPerjalanan,
@@ -74,4 +85,5 @@ export {
     editPerjalanan,
     getAllTransportasi,
     getAnggaran,
+    getPangkat,
 }

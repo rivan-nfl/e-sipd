@@ -7,7 +7,7 @@ import Layout from '../../components/Layout';
 import CustomButton from '../../components/Button';
 import photoProfile from '../../assets/images/pp.png'
 
-import { getProfile } from '../../service/userService'
+import { deleteAnggota, getProfile } from '../../service/userService'
 
 const DetailAnggota = ({ route, navigation }) => {
     const dispatch = useDispatch()
@@ -15,6 +15,18 @@ const DetailAnggota = ({ route, navigation }) => {
     const user = useSelector(state => state.userManagement)
 
     const { params } = route;
+
+    const handleDeleteAnggota = () => {
+        deleteAnggota(params.id, token)
+        .then(res => {
+            alert('Berhasil Menghapus Anggota')
+            navigation.navigate('Home')
+        })
+        .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+        })
+    }
 
     useEffect(() => {
         getProfile(params.id, token)
@@ -51,7 +63,7 @@ const DetailAnggota = ({ route, navigation }) => {
             </View>
             <View style={styles.footer}>
                 <CustomButton title='Edit' buttonStyle={styles.editBtn} onPress={() => navigation.navigate('Edit Anggota', user)} />
-                <CustomButton title='Delete' buttonStyle={styles.deleteBtn} style={styles.editBtnTxt} />
+                <CustomButton title='Delete' buttonStyle={styles.deleteBtn} style={styles.editBtnTxt} onPress={handleDeleteAnggota} />
             </View>
         </Layout>
     )

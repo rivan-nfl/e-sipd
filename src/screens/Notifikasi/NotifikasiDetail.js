@@ -43,13 +43,11 @@ const NotifikasiDetail = ({ route, navigation }) => {
             <CustomButton title='Edit Perjalanan' buttonStyle={{ width: '100%' }} onPress={() => navigation.navigate('Edit ESIPD', params.id_perjalanan)} />
           </View>
           )
-          : params.perjalanan_status == 'pending'
-          ? (
+          :  (
             <View style={styles.footer}>
             <CustomButton title='Lihat Detail Perjalanan' buttonStyle={{ width: '100%' }} onPress={handleDetailPerjalanan} />
           </View>
           )
-          : null
         }
       </View>
     </View>

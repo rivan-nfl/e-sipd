@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Picker } from '@react-native-picker/picker';
 
@@ -10,6 +10,7 @@ import { COLORS } from '../../utils/colors';
 import Layout from '../../components/Layout';
 import CustomButton from '../../components/Button';
 import Input from '../../components/Input';
+import { getPangkat } from '../../service/e-sipdService';
 
 const EditDipa = ({ route, navigation }) => {
     const dispatch = useDispatch()
@@ -74,6 +75,21 @@ const EditDipa = ({ route, navigation }) => {
       })
     }
 
+    const handleGetPangkat = () => {
+      getPangkat(token)
+      .then(res => {
+        setDaftarPangkat(res.data.data)
+      })
+      .catch(err => {
+        console.log('err =', err.response.data)
+        alert(err.response.data.message)
+      })
+    }
+
+    useEffect(() => {
+      handleGetPangkat()
+    }, [])
+
     return (
       <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
       <Layout title='Edit DIPA' contentStyle={{ paddingTop: 40 }}>
@@ -97,8 +113,8 @@ const EditDipa = ({ route, navigation }) => {
                     { daftarPangkat.map((item, index) => (
                       <Picker.Item
                           key={index}
-                          label={item.label} 
-                          value={item.value} 
+                          label={item.sub_pangkat} 
+                          value={item.sub_pangkat} 
                           style={{ fontSize: 17 }} 
                       />
                     ))}

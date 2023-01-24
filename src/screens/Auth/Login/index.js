@@ -29,8 +29,13 @@ const Login = ({ navigation }) => {
         id: res.data.data.id,
         nama: res.data.data.nama,
         username: res.data.data.username,
+        nrp: res.data.data.nrp,
         alamat: res.data.data.alamat,
-        role: res.data.data.role
+        pangkat: res.data.data.pangkat,
+        bagian: res.data.data.bagian,
+        foto: res.data.data.foto,
+        jabatan: res.data.data.jabatan,
+        role: res.data.data.role,
       }})
       navigation.navigate('Main')
     })

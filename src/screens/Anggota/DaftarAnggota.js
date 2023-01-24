@@ -57,6 +57,12 @@ const DaftarAnggota = ({ navigation }) => {
                 ))}
             </View>
             </ScrollView>
+            <Pressable
+                style={styles.btn}
+                onPress={() => navigation.navigate('Register', 'anggota')}
+            >
+                <Text style={styles.btnText}>+</Text>
+            </Pressable>
         </View>
     )
 }
@@ -101,5 +107,21 @@ const styles = StyleSheet.create({
     anggotaText: {
         fontSize: 15,
         color: COLORS.BLACK
+    },
+    btn: {
+        position: 'absolute',
+        bottom: 15,
+        right: 15,
+        backgroundColor: COLORS.GREEN,
+        height: 60,
+        width: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 8,
+    },
+    btnText: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        color: COLORS.WHITE
     }
 })

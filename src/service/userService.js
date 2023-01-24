@@ -42,9 +42,20 @@ const editAnggota = (id, token, data) => {
     })
 }
 
+const deleteAnggota = (id, token) => {
+    return axios({
+        method: 'DELETE',
+        url: `${baseUrl}/users/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+    })
+}
+
 export {
     getAllUsers,
     getProfile,
     getUserById,
-    editAnggota
+    editAnggota,
+    deleteAnggota
 }

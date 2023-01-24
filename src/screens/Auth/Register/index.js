@@ -10,9 +10,9 @@ import CustomButton from '../../../components/Button'
 import Header from '../../../components/Header'
 import Input from '../../../components/Input'
 
-const Register = () => {
-  // const [role, setRole] = useState('anggota')
-  const [role, setRole] = useState('dipa')
+const Register = ({ route }) => {
+  const { params } = route
+  const [role, setRole] = useState(params)
 
   // Pangkat
   const [open, setOpen] = useState(false);
