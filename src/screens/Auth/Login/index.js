@@ -11,8 +11,8 @@ import tniPhoto from '../../../assets/images/tni.png'
 const Login = ({ navigation }) => {
   const dispatch = useDispatch()
 
-  const [username, setUsername] = useState('admin')
-  const [password, setPassword] = useState('password')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleLogin = () => {
     axios({

@@ -12,7 +12,7 @@ const Notifikasi = ({ navigation }) => {
     const dataNotifikasi = useSelector(state => state.notifikasi)
 
     const editNotif = (id) => {
-      editNotification(id, token, { status: "open" })
+      editNotification(id, token, { status: userRole == "admin" ? "close" : "open" })
       .then(response => {
         getAllNotifications(token).then(res => dispatch({type: 'SAVE_NOTIFIKASI', data: res.data.data}))
       })
@@ -21,6 +21,7 @@ const Notifikasi = ({ navigation }) => {
           alert(err.response.data.message)
       })
     }
+    
     return (
       <View style={{ flex: 1 }}>
         {/* Header */}
