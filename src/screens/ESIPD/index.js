@@ -61,10 +61,10 @@ const ESIPD = ({ navigation }) => {
             id: 'luar_kota',
             jenis: 'Luar Kota'
         },
-        {
-            id: 'dalam_kota',
-            jenis: 'Dalam Kota'
-        },
+        // {
+        //     id: 'dalam_kota',
+        //     jenis: 'Dalam Kota'
+        // },
     ]);
 
     const [daftarTujuan, setDaftarTujuan] = useState([]);

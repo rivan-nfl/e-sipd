@@ -52,15 +52,17 @@ const DetailPerjalanan = ({ route }) => {
     const handleGetAnggaran = () => {
         getPangkat(token, { pangkat: user.pangkat })
         .then(res => {
-            getAnggaran(token, { tingkat: res.data.data[0].tingkat })
-            .then(response => {
-                params?.jenis_perjalanan == 'luar_kota'
-                ? setAnggaran(response.data.data[0].anggaran_luar_kota)
-                : setAnggaran(response.data.data[0].anggaran_dalam_kota)
-                
-            })
+            if(res.data.data.length) {
+                getAnggaran(token, { tingkat: res.data.data[0].tingkat })
+                .then(response => {
+                    params?.jenis_perjalanan == 'luar_kota'
+                    ? setAnggaran(response.data.data[0].anggaran_luar_kota)
+                    : setAnggaran(response.data.data[0].anggaran_dalam_kota)
+                })
+            }
         })
         .catch(err => {
+            console.log('Masuk');
             console.log('err =', err.response.data)
             alert(err.response.data.message)
         })
@@ -92,6 +94,14 @@ const DetailPerjalanan = ({ route }) => {
                     <Text style={styles.text}>{params.daerah_tujuan}</Text>
                 </View>
                 <View style={styles.menu}>
+                    <Text style={styles.menuTxt}>Kota Asal</Text>
+                    <Text style={styles.text}>{params.kota_asal}</Text>
+                </View>
+                <View style={styles.menu}>
+                    <Text style={styles.menuTxt}>Kota Tujuan</Text>
+                    <Text style={styles.text}>{params.kota_tujuan}</Text>
+                </View>
+                <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Tanggal Berangkat</Text>
                     <Text style={styles.text}>{new Date(params.tgl_berangkat).toLocaleDateString()}</Text>
                 </View>
@@ -109,7 +119,10 @@ const DetailPerjalanan = ({ route }) => {
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Anggaran</Text>
-                    <Text style={styles.text}>Rp. {anggaran}</Text>
+                    <View style={styles.anggaranCover}>
+                        <Text style={styles.anggaranText}>Rp. {anggaran}</Text>
+                        <Text style={styles.anggaranText}>Total : Rp. {anggaran}</Text>
+                    </View>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Status</Text>
@@ -205,5 +218,18 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 8,
         elevation: 10
-    }
+    },
+    anggaranCover: {
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: COLORS.GRAY,
+        width: '100%',
+        padding: 10,
+    },
+    anggaranText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: COLORS.BLACK,
+        textAlign: 'center',
+    },
 })
