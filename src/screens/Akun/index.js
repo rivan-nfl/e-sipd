@@ -57,7 +57,7 @@ const Akun = () => {
           <Text style={styles.textProfileMenu}>{profile.nrp}</Text>
           <Text style={styles.textProfileMenu}>{profile.pangkat}</Text>
           <Text style={styles.textProfileMenu}>{profile.jabatan}</Text>
-          { profile?.bagian && <Text style={styles.textProfileMenu}>{profile.bagian}</Text> }
+          { profile?.bagian && profile?.role !== 'anggota' && <Text style={styles.textProfileMenu}>{profile.bagian}</Text> }
         </View>
         <View style={styles.footer}>
             <CustomButton title='Logout' onPress={() => dispatch({type: 'LOGOUT'})} />

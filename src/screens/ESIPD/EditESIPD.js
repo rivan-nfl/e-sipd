@@ -108,7 +108,6 @@ const EditESIPD = ({ navigation, route }) => {
                 transportasi: transportasi,
                 penerima: selectedAnggota.id
             }
-            console.log(data);
 
             // !keterangan ||
             // !nomor_sprint ||
@@ -242,7 +241,6 @@ const EditESIPD = ({ navigation, route }) => {
     useEffect(() => {
         getAllPerjalanan(token, { perjalanan_id: params })
         .then(res => {
-            console.log(res.data.data)
             setNomorSprint(res.data.data[0].nomor_sprint)
             setNomorSPPD(res.data.data[0].nomor_sppd)
             setKeterangan(res.data.data[0].keterangan)

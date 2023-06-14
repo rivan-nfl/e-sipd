@@ -22,8 +22,6 @@ const AnggaranPerjalanan = () => {
         })
     }, [])
 
-    console.log(dataPerjalanan);
-
     return (
         <View style={{ flex: 1 }}>
         {/* Header */}
@@ -38,8 +36,8 @@ const AnggaranPerjalanan = () => {
                     >
                         <Text style={styles.anggotaTitle}>{item.pangkat}</Text>
                         <Text style={styles.anggotaTitle}>{item.tingkat}</Text>
-                        <Text style={styles.anggotaText}>Anggaran dalam kota : Rp. {item.anggaran_dalam_kota}</Text>
-                        <Text style={styles.anggotaText}>Anggaran luar kota : Rp. {item.anggaran_luar_kota}</Text>
+                        <Text style={styles.anggotaText}>Anggaran dalam kota : Rp. {Number(item.anggaran_dalam_kota).toLocaleString()}</Text>
+                        <Text style={styles.anggotaText}>Anggaran luar kota : Rp. {Number(item.anggaran_luar_kota).toLocaleString()}</Text>
                     </Pressable>
                 ))}
             </View>

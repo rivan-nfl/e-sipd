@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, ScrollView, Modal, TextInput } from 'react-nati
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getAllPerjalanan, getAnggaran, getPangkat, updatePerjalanan } from '../../service/e-sipdService';
+import { getUserById } from '../../service/userService';
 import { COLORS } from '../../utils/colors';
 
 import Layout from '../../components/Layout';
@@ -50,19 +51,21 @@ const DetailPerjalanan = ({ route }) => {
     }
 
     const handleGetAnggaran = () => {
-        getPangkat(token, { pangkat: user.pangkat })
-        .then(res => {
-            if(res.data.data.length) {
-                getAnggaran(token, { tingkat: res.data.data[0].tingkat })
-                .then(response => {
-                    params?.jenis_perjalanan == 'luar_kota'
-                    ? setAnggaran(response.data.data[0].anggaran_luar_kota)
-                    : setAnggaran(response.data.data[0].anggaran_dalam_kota)
-                })
-            }
+        getUserById(token, params.penerima_id)
+        .then(ress => {
+            getPangkat(token, { pangkat: ress.data.data.pangkat })
+            .then(res => {
+                if(res.data.data.length) {
+                    getAnggaran(token, { tingkat: res.data.data[0].tingkat })
+                    .then(response => {
+                        params?.jenis_perjalanan == 'luar_kota'
+                        ? setAnggaran(response.data.data[0].anggaran_luar_kota)
+                        : setAnggaran(response.data.data[0].anggaran_dalam_kota)
+                    })
+                }
+            })
         })
         .catch(err => {
-            console.log('Masuk');
             console.log('err =', err.response.data)
             alert(err.response.data.message)
         })
@@ -120,8 +123,8 @@ const DetailPerjalanan = ({ route }) => {
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Anggaran</Text>
                     <View style={styles.anggaranCover}>
-                        <Text style={styles.anggaranText}>Rp. {anggaran}</Text>
-                        <Text style={styles.anggaranText}>Total : Rp. {anggaran}</Text>
+                        <Text style={styles.anggaranText}>Rp. {Number(anggaran).toLocaleString()}</Text>
+                        <Text style={styles.anggaranText}>Total : Rp. {Number(anggaran).toLocaleString()}</Text>
                     </View>
                 </View>
                 <View style={styles.menu}>
@@ -134,6 +137,12 @@ const DetailPerjalanan = ({ route }) => {
                 <View style={styles.footer}>
                     <CustomButton title='Approve' buttonStyle={styles.editBtn} onPress={() => handleUpdatePerjalanan('approved')} />
                     <CustomButton title='Reject' buttonStyle={styles.deleteBtn} style={styles.editBtnTxt} onPress={() => setModalVisible(!modalVisible)} />
+                </View>
+            )}
+
+            { (status == 'approved' && userRole == 'anggota') && (
+                <View style={styles.footer}>
+                    <CustomButton title='Selesai Perjalanan' buttonStyle={{ width: '100%' }} onPress={() => alert('Finish dan set data laporan')} />
                 </View>
             )}
             
