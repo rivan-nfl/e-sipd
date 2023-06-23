@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, ScrollView, Modal, TextInput } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getAllPerjalanan, getAnggaran, getPangkat, updatePerjalanan } from '../../service/e-sipdService';
+import { getAllPerjalanan, getAnggaran, getPangkat, setSelesaiPerjalanan, updatePerjalanan } from '../../service/e-sipdService';
 import { getUserById } from '../../service/userService';
 import { COLORS } from '../../utils/colors';
 
@@ -10,7 +10,7 @@ import Layout from '../../components/Layout';
 import CustomButton from '../../components/Button';
 import Input from '../../components/Input';
 
-const DetailPerjalanan = ({ route }) => {
+const DetailPerjalanan = ({ route, navigation }) => {
     const dispatch = useDispatch()
 
     const token = useSelector(state => state.auth.token)
@@ -42,6 +42,22 @@ const DetailPerjalanan = ({ route }) => {
             .catch(err => {
                 console.log('err =', err.response.data)
                 alert(err.response.data.message)
+            })
+        })
+        .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+        })
+    }
+
+    const handleSelesaiPerjalanan = () => {
+        setSelesaiPerjalanan(token, params.id)
+        .then(res => {
+            alert('Sukses Menyelesaikan Perjalanan')
+            getAllPerjalanan(token)
+            .then(res => {
+                dispatch({type: 'SAVE_PERJALANAN', data: res.data.data})
+                navigation.navigate('Home')
             })
         })
         .catch(err => {
@@ -142,7 +158,7 @@ const DetailPerjalanan = ({ route }) => {
 
             { (status == 'approved' && userRole == 'anggota') && (
                 <View style={styles.footer}>
-                    <CustomButton title='Selesai Perjalanan' buttonStyle={{ width: '100%' }} onPress={() => alert('Finish dan set data laporan')} />
+                    <CustomButton title='Selesai Perjalanan' buttonStyle={{ width: '100%' }} onPress={() => handleSelesaiPerjalanan()} />
                 </View>
             )}
             

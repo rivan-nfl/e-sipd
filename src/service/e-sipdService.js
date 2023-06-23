@@ -12,6 +12,17 @@ const getAllPerjalanan = (token, params) => {
     })
 }
 
+const getAllLaporan = (token, params) => {
+    return axios({
+        method: 'GET',
+        url: `${baseUrl}/e-sipd/laporan`,
+        params: { ...params },
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+}
+
 const createPerjalanan = (token, data) => {
     return axios({
         method: 'POST',
@@ -78,12 +89,24 @@ const getPangkat = (token, params) => {
     })
 }
 
+const setSelesaiPerjalanan = (token, id) => {
+    return axios({
+        method: 'POST',
+        url: `${baseUrl}/e-sipd/${id}`,
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+}
+
 export {
     getAllPerjalanan,
+    getAllLaporan,
     createPerjalanan,
     updatePerjalanan,
     editPerjalanan,
     getAllTransportasi,
     getAnggaran,
     getPangkat,
+    setSelesaiPerjalanan
 }

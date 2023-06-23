@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { getAllPerjalanan } from '../../service/e-sipdService';
+import { getAllLaporan } from '../../service/e-sipdService';
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 
@@ -11,16 +11,16 @@ const LaporanPerjalanan = ({ navigation }) => {
     const [dataPerjalanan, setDataPerjalanan] = useState([])
 
     // Loads
-    // useEffect(() => {
-    //     getAllPerjalanan(token)
-    //     .then(res => {
-    //         console.log(res.data);
-    //     })
-    //     .catch(err => {
-    //         console.log('err =', err.response.data)
-    //         alert(err.response.data.message)
-    //     })
-    // }, [])
+    useEffect(() => {
+        getAllLaporan(token)
+        .then(res => {
+            setDataPerjalanan(res.data.data);
+        })
+        .catch(err => {
+            console.log('err =', err.response.data)
+            alert(err.response.data.message)
+        })
+    }, [])
 
     return (
         <View style={{ flex: 1 }}>
@@ -33,7 +33,7 @@ const LaporanPerjalanan = ({ navigation }) => {
                     <Pressable
                         key={index}
                         style={styles.card}
-                        // onPress={() => navigation.navigate('Detail Perjalanan', item)}
+                        onPress={() => navigation.navigate('Detail Perjalanan', item)}
                     >
                         <Text style={styles.anggotaTitle}>{item.nomor_sprint}</Text>
                         <Text style={styles.anggotaTitle}>{item.nomor_sppd}</Text>
