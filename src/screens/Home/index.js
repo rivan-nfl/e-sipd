@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
   },
   menuText: {
     textAlign: 'center',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: 'black'
   }
 })

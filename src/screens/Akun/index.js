@@ -7,6 +7,7 @@ import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 import profilePhoto from '../../assets/images/pp.png'
 import CustomButton from '../../components/Button'
+import { baseUrl } from '../../service/apiConfig'
 
 const Akun = () => {
   const dispatch = useDispatch()
@@ -16,7 +17,7 @@ const Akun = () => {
   const getProfile = () => {
     axios({
       method: 'GET',
-      url: `http://10.0.2.2:4000/users/${profile.id}`,
+      url: `${baseUrl}/users/${profile.id}`,
       headers: {
         Authorization: `Bearer ${token}`
       }

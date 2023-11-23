@@ -134,6 +134,7 @@ const Register = ({ route, navigation }) => {
           <View style={styles.picker}>
           <Picker
             selectedValue={value}
+            style={{ color: 'black'}}
             onValueChange={itemValue => setValue(itemValue)}
           >
             { items.map((item, index) => (

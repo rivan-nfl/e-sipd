@@ -3,6 +3,7 @@ import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react
 import { useSelector } from 'react-redux'
 import axios from 'axios'
 
+import { baseUrl } from '../../service/apiConfig'
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 
@@ -14,7 +15,7 @@ const DaftarDipa = ({ navigation }) => {
     const getAllDipa = () => {
         axios({
             method: 'GET',
-            url: `http://10.0.2.2:4000/users`,
+            url: `${baseUrl}/users`,
             headers: {
                 Authorization: `Bearer ${token}`
             },

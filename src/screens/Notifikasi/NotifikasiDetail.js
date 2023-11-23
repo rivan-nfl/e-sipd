@@ -27,10 +27,12 @@ const NotifikasiDetail = ({ route, navigation }) => {
       <View style={styles.content}>
         {/* Notif Header */}
         <View style={styles.header}>
-          <Text style={styles.titleText}>{params.title}</Text>
+          <Text style={[styles.titleText, { flex: 1 }]}>{params.title}</Text>
+          <Text style={styles.titleText}>{new Date(params?.created_at).toLocaleDateString()}</Text>
         </View>
         <View style={styles.header}>
-          <Text style={[styles.contentText, { fontWeight: 'bold' }]}>{params.deskripsi}</Text>
+          <Text style={[styles.contentText, { fontWeight: 'bold', flex: 1 }]}>{params.deskripsi}</Text>
+          <Text style={[styles.contentText, { fontWeight: 'bold' }]}>{new Date(params?.updated_at).toLocaleDateString()}</Text>
         </View>
         {/* Notif Content */}
         <View style={styles.notifContent}>
@@ -40,7 +42,7 @@ const NotifikasiDetail = ({ route, navigation }) => {
           params.perjalanan_status == 'rejected'
           ? (
           <View style={styles.footer}>
-            <CustomButton title='Edit Perjalanan' buttonStyle={{ width: '100%' }} onPress={() => navigation.navigate('Edit ESIPD', params.id_perjalanan)} />
+            <CustomButton title='Pengajuan Ulang' buttonStyle={{ width: '100%' }} onPress={() => navigation.navigate('Edit ESIPD', params.id_perjalanan)} />
           </View>
           )
           :  (
@@ -67,7 +69,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.GRAY,
     padding: 16,
-    marginBottom: 18
+    marginBottom: 18,
+    flexDirection: 'row'
   },
   notifContent: {
     flex: 1,

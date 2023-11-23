@@ -108,6 +108,7 @@ const EditDipa = ({ route, navigation }) => {
                 <View style={styles.picker}>
                   <Picker
                     selectedValue={pangkat}
+                    style={{ color: 'black' }}
                     onValueChange={itemValue => setPangkat(itemValue)}
                   >
                     { daftarPangkat.map((item, index) => (
@@ -126,6 +127,7 @@ const EditDipa = ({ route, navigation }) => {
                 <View style={styles.picker}>
                   <Picker
                     selectedValue={bagian}
+                    style={{ color: 'black' }}
                     onValueChange={itemValue => setBagian(itemValue)}
                   >
                     { itemsBagian.map((item, index) => (

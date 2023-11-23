@@ -19,7 +19,8 @@ const Login = ({ navigation }) => {
   const handleLogin = () => {
     axios({
       method: 'POST',
-      url: 'http://10.0.2.2:4000/auth/login',
+      // url: 'http://10.0.2.2:4000/auth/login',
+      url: 'http://192.167.3.197:4000/auth/login',
       data: {
         username,
         password

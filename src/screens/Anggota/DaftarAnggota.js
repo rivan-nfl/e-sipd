@@ -3,6 +3,7 @@ import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from
 import { useSelector } from 'react-redux'
 import axios from 'axios'
 
+import { baseUrl } from '../../service/apiConfig'
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 import photoProfile from '../../assets/images/pp.png'
@@ -15,7 +16,7 @@ const DaftarAnggota = ({ navigation }) => {
     const getAllAnggota = () => {
         axios({
             method: 'GET',
-            url: `http://10.0.2.2:4000/users`,
+            url: `${baseUrl}/users`,
             headers: {
               Authorization: `Bearer ${token}`
             },

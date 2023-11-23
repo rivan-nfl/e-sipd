@@ -245,6 +245,7 @@ const ESIPD = ({ navigation }) => {
                     <View style={styles.picker}>
                         <Picker
                             selectedValue={anggota}
+                            style={{ color: 'black' }}
                             onValueChange={itemValue => {
                                 setSelectedAnggota(daftarAnggota.find(item => item.id == itemValue));
                                 setAnggota(itemValue)
