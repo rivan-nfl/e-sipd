@@ -61,10 +61,10 @@ const ESIPD = ({ navigation }) => {
             id: 'luar_kota',
             jenis: 'Luar Kota'
         },
-        // {
-        //     id: 'dalam_kota',
-        //     jenis: 'Dalam Kota'
-        // },
+        {
+            id: 'dalam_kota',
+            jenis: 'Dalam Kota'
+        },
     ]);
 
     const [daftarTujuan, setDaftarTujuan] = useState([]);
@@ -139,7 +139,7 @@ const ESIPD = ({ navigation }) => {
                 }
                 setDaftarProvinsi([{provinsi: 'Pilih Provinsi'}, ...newDaftarProvinsi])
                 setDaftarTujuan(res.data.data)
-                if(jenisPerjalanan == 'dalam_kota') {
+                if(jenisPerjalanan == 'dalam_kota' || jenisPerjalanan == 'luar_kota') {
                     setProvinsi(newDaftarProvinsi[0].provinsi)
                     setDaftarKota(res.data.data)
                 } else {
@@ -354,7 +354,7 @@ const ESIPD = ({ navigation }) => {
                                 setKota(itemValue)
                             }}
                         >   
-                            { provinsi && provinsi != 'Pilih Provinsi'
+                            { provinsi && provinsi != 'Pilih Kota'
                                 ? daftarKota.map((item, index) => 
                                     <Picker.Item 
                                         key={index} 
@@ -440,6 +440,7 @@ const ESIPD = ({ navigation }) => {
                         style={styles.picker}
                     >
                         <Picker
+                            enabled={false}
                             selectedValue={lokasiAsal}
                             onValueChange={itemValue => {
                                 setLokasiAsal(itemValue)
@@ -469,6 +470,7 @@ const ESIPD = ({ navigation }) => {
                         style={styles.picker}
                     >
                         <Picker
+                            enabled={false}
                             selectedValue={lokasiTujuan}
                             onValueChange={itemValue => {
                                 setLokasiTujuan(itemValue)

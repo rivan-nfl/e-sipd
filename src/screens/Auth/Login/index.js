@@ -7,20 +7,20 @@ import Container from '../../../components/Container'
 import Input from '../../../components/Input'
 import CustomButton from '../../../components/Button'
 import tniPhoto from '../../../assets/images/tni.png'
+import { baseUrl } from '../../../service/apiConfig'
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch()
 
-  // const [username, setUsername] = useState('')
-  const [username, setUsername] = useState('admin')
-  // const [password, setPassword] = useState('')
-  const [password, setPassword] = useState('password')
+  const [username, setUsername] = useState('')
+  // const [username, setUsername] = useState('anggota')
+  const [password, setPassword] = useState('')
+  // const [password, setPassword] = useState('password')
 
   const handleLogin = () => {
     axios({
       method: 'POST',
-      // url: 'http://10.0.2.2:4000/auth/login',
-      url: 'http://192.167.3.197:4000/auth/login',
+      url: `${baseUrl}/auth/login`,
       data: {
         username,
         password

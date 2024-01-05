@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View, ScrollView, Modal, TextInput } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Modal } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 import { getAllPerjalanan, getAnggaran, getPangkat, setSelesaiPerjalanan, updatePerjalanan } from '../../service/e-sipdService';
 import { getUserById } from '../../service/userService';
@@ -15,7 +16,6 @@ const DetailPerjalanan = ({ route, navigation }) => {
 
     const token = useSelector(state => state.auth.token)
     const userRole = useSelector(state => state.user.role)
-    const user = useSelector(state => state.user)
 
     const { params } = route;
 
@@ -23,6 +23,21 @@ const DetailPerjalanan = ({ route, navigation }) => {
     const [keterangan, setKeterangan] = useState('')
     const [status, setStatus] = useState(params.status)
     const [anggaran, setAnggaran] = useState('')
+
+    const handlePickImage = () => {
+        const options = {
+            mediaType:'photo'
+        }
+
+        launchCamera(options, (res) => {
+            if(res.didCancel) {
+                console.log('User Canceled')
+            } else {
+                console.log('Cam', res.assets[0])
+                handleSelesaiPerjalanan()
+            }
+        });
+    }
 
     const handleUpdatePerjalanan = (status) => {
         const data = {
@@ -158,7 +173,8 @@ const DetailPerjalanan = ({ route, navigation }) => {
 
             { (status == 'approved' && userRole == 'anggota') && (
                 <View style={styles.footer}>
-                    <CustomButton title='Selesai Perjalanan' buttonStyle={{ width: '100%' }} onPress={() => handleSelesaiPerjalanan()} />
+                    {/* <CustomButton title='Selesai Perjalanan' buttonStyle={{ width: '100%' }} onPress={() => handleSelesaiPerjalanan()} /> */}
+                    <CustomButton title='Selesai Perjalanan' buttonStyle={{ width: '100%' }} onPress={handlePickImage} />
                 </View>
             )}
             
