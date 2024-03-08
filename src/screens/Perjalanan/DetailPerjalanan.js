@@ -23,6 +23,7 @@ const DetailPerjalanan = ({ route, navigation }) => {
     const [keterangan, setKeterangan] = useState('')
     const [status, setStatus] = useState(params.status)
     const [anggaran, setAnggaran] = useState('')
+    const [anggaranBody, setAnggaranBody] = useState({})
 
     const handlePickImage = () => {
         const options = {
@@ -104,6 +105,7 @@ const DetailPerjalanan = ({ route, navigation }) => {
 
     useEffect(() => {
         handleGetAnggaran()
+        setAnggaranBody(JSON.parse(params?.anggaran))
     }, [])
 
     return (
@@ -154,8 +156,46 @@ const DetailPerjalanan = ({ route, navigation }) => {
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Anggaran</Text>
                     <View style={styles.anggaranCover}>
-                        <Text style={styles.anggaranText}>Rp. {Number(anggaran).toLocaleString()}</Text>
-                        <Text style={styles.anggaranText}>Total : Rp. {Number(anggaran).toLocaleString()}</Text>
+                        <Text style={[styles.anggaranText, { textAlign: 'left' }]}>Biaya Harian : Rp. {Number(anggaranBody?.biayaHarian).toLocaleString()}</Text>
+                        <Text style={[styles.anggaranText, { fontSize: 14,textAlign: 'left' }]}>{anggaranBody?.biayaHarianInfo}</Text>
+
+                        <View style={{ height: 2, marginBottom: 10 }} />
+
+                        <Text style={[styles.anggaranText, { textAlign: 'left' }]}>Biaya Penginapan : Rp. {Number(anggaranBody?.biayaPenginapan).toLocaleString()}</Text>
+                        <Text style={[styles.anggaranText, { fontSize: 14, textAlign: 'left' }]}>{anggaranBody?.biayaPenginapanInfo}</Text>
+
+                        <View style={{ height: 2, marginBottom: 10 }} />
+
+                        {anggaranBody?.biayaBBMDanPelumas && <>
+                                <Text style={[styles.anggaranText, { textAlign: 'left' }]}>BBM :</Text>
+                                <Text style={[styles.anggaranText, { textAlign: 'left', fontSize: 16 }]}>PP : Rp. {Number(anggaranBody?.biayaBBMDanPelumas?.BBM?.PP).toLocaleString()}</Text>
+                                <Text style={[styles.anggaranText, { textAlign: 'left', fontSize: 16 }]}>Jatah Harian : Rp. {Number(anggaranBody?.biayaBBMDanPelumas?.BBM?.jathar).toLocaleString()}</Text>
+
+                                <View style={{ height: 2, marginBottom: 10 }} />
+
+                                <Text style={[styles.anggaranText, { textAlign: 'left' }]}>Pelumas :</Text>
+                                <Text style={[styles.anggaranText, { textAlign: 'left', fontSize: 16 }]}>PP : Rp. {Number(anggaranBody?.biayaBBMDanPelumas?.pelumas?.PP).toLocaleString()}</Text>
+                                <Text style={[styles.anggaranText, { textAlign: 'left', fontSize: 16 }]}>Jatah Harian : Rp. {Number(anggaranBody?.biayaBBMDanPelumas?.pelumas?.jathar).toLocaleString()}</Text>
+
+                                <View style={{ height: 2, marginBottom: 3 }} />
+
+
+                             <Text style={[styles.anggaranText, { fontSize: 14, textAlign: 'left' }]}>{anggaranBody?.biayaBBMDanPelumasInfo}</Text>
+                        </>}
+
+                        {anggaranBody?.biayaTransport && <>
+                            <Text style={[styles.anggaranText, { textAlign: 'left' }]}>Biaya Transport : Rp. {Number(anggaranBody?.biayaTransport).toLocaleString()}</Text>
+                            <Text style={[styles.anggaranText, { fontSize: 14, textAlign: 'left' }]}>{anggaranBody?.biayaTransportInfo}</Text>
+                        </>}
+
+                        <View style={{ height: 2, marginTop: 10 }} />
+                        
+                        <Text style={[styles.anggaranText, { textAlign: 'left' }]}>Uang Representasi : Rp. {Number(anggaranBody?.uangRepresentasi).toLocaleString()}</Text>
+                        <Text style={[styles.anggaranText, { fontSize: 14, textAlign: 'left' }]}>{anggaranBody?.uangRepresentasiInfo}</Text>
+
+                        <View style={{ height: 2, backgroundColor: 'grey', marginVertical: 10 }} />
+
+                        <Text style={styles.anggaranText}>Total : Rp. {Number(anggaranBody?.total).toLocaleString()}</Text>
                     </View>
                 </View>
                 <View style={styles.menu}>
