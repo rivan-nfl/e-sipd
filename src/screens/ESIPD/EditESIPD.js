@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Icon from 'react-native-vector-icons/Ionicons'
 import { ScrollView, StyleSheet, Text, View, Pressable, Alert } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
@@ -49,6 +50,7 @@ const EditESIPD = ({ navigation, route }) => {
     // Anggota
     const [anggota, setAnggota] = useState();
     const [selectedAnggota, setSelectedAnggota] = useState();
+    const [pengikut, setPengikut] = useState([]);
     const [daftarAnggota, setDaftarAnggota] = useState([]);
 
     // Perjalanan Dinas
@@ -97,8 +99,8 @@ const EditESIPD = ({ navigation, route }) => {
         } else {
             const data = {
                 keterangan,
-                nomor_sprint: nomorSprint,
-                nomor_sppd: nomorSPPD,
+                nomor_sprint: `SPRINT-${nomorSprint}`,
+                nomor_sppd: `SPPD-${nomorSPPD}`,
                 jenis_perjalanan: jenisPerjalanan,
                 daerah_tujuan: provinsi,
                 kota_asal: lokasiAsal,
@@ -106,20 +108,9 @@ const EditESIPD = ({ navigation, route }) => {
                 tgl_berangkat: String(tanggalBerangkat),
                 tgl_kembali: String(tanggalKembali),
                 transportasi: transportasi,
-                penerima: selectedAnggota.id
+                penerima: pengikut[0]?.id || selectedAnggota.id,
+                pejalan: pengikut
             }
-
-            // !keterangan ||
-            // !nomor_sprint ||
-            // !nomor_sppd ||
-            // !jenis_perjalanan ||
-            // !daerah_tujuan ||
-            // !kota_asal ||
-            // !kota_tujuan ||
-            // !tgl_berangkat ||
-            // !tgl_kembali ||
-            // !transportasi ||
-            // !penerima
     
             editPerjalanan(token, params, data)
             .then(res => {
@@ -171,9 +162,26 @@ const EditESIPD = ({ navigation, route }) => {
         if(provinsi) {
             if(jenisPerjalanan == 'dalam_kota') {
                 setKota(daftarTujuan[0])
-                setDaftarKota(daftarTujuan)
+                setDaftarKota(
+                    daftarTujuan.reduce((acc, current) => {
+                        const isDuplicate = acc.some(item => item.lokasi_tujuan === current.lokasi_tujuan);
+                        if (!isDuplicate) {
+                        acc.push(current);
+                        }
+                        return acc;
+                    }, [])
+                )
             } else if(jenisPerjalanan == 'luar_kota' && provinsi != 'Pilih Provinsi') {
-                const newDaftarTujuan = daftarTujuan.filter(item => item.provinsi == provinsi);
+                const newDaftarTujuan = 
+                daftarTujuan
+                    .filter(item => item.provinsi == provinsi)
+                    .reduce((acc, current) => {
+                        const isDuplicate = acc.some(item => item.lokasi_tujuan === current.lokasi_tujuan);
+                        if (!isDuplicate) {
+                        acc.push(current);
+                        }
+                        return acc;
+                    }, []);
                 setKota(newDaftarTujuan[0])
                 setDaftarKota(newDaftarTujuan)
             } else {
@@ -241,14 +249,15 @@ const EditESIPD = ({ navigation, route }) => {
     useEffect(() => {
         getAllPerjalanan(token, { perjalanan_id: params })
         .then(res => {
-            setNomorSprint(res.data.data[0].nomor_sprint)
-            setNomorSPPD(res.data.data[0].nomor_sppd)
+            setNomorSprint(res.data.data[0].nomor_sprint?.slice(7))
+            setNomorSPPD(res.data.data[0].nomor_sppd?.slice(5))
             setKeterangan(res.data.data[0].keterangan)
             setJenisPerjalanan(res.data.data[0].jenis_perjalanan)
             setProvinsi(res.data.data[0].daerah_tujuan)
             setKota(res.data.data[0].kota_tujuan)
             setTanggalBerangkat(new Date(res.data.data[0].tgl_berangkat))
             setTanggalKembali(new Date(res.data.data[0].tgl_kembali))
+            setPengikut(JSON.parse(res.data.data[0].pejalan))
 
             getUserById(token, res.data.data[0].penerima_id)
             .then(response => {
@@ -265,7 +274,7 @@ const EditESIPD = ({ navigation, route }) => {
         <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
         <Layout title='E - SIPD' contentStyle={{}}>
             <View style={{ width: '90%' }}>
-                <View style={styles.menu}>
+                {/* <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nama</Text>
                     <Text style={styles.text}>{selectedAnggota?.nama}</Text>
                 </View>
@@ -276,14 +285,90 @@ const EditESIPD = ({ navigation, route }) => {
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Jabatan</Text>
                     <Text style={styles.text}>{selectedAnggota?.jabatan}</Text>
+                </View> */}
+                <View style={styles.menu}>
+                    <Text style={styles.menuTxt}>Pejalan</Text>
+                    {pengikut?.map((item, index) => (
+                        <View key={index} style={{
+                            marginBottom: 8,
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            borderColor: COLORS.GRAY,
+                            padding: 10,
+                            flexDirection: 'row',
+                            alignItems: 'center'
+                        }}>
+                            <View style={{ flexGrow: 1 }}>
+                                <Text style={{
+                                    fontSize: 17,
+                                    fontWeight: 'bold',
+                                    color: COLORS.BLACK,
+                                    textAlign: 'center',
+                                }}>{item.nama}</Text>
+                                <Text style={{
+                                    fontSize: 17,
+                                    fontWeight: 'bold',
+                                    color: COLORS.BLACK,
+                                    textAlign: 'center',
+                                }}>{item.pangkat}</Text>
+                                <Text style={{
+                                    fontSize: 17,
+                                    fontWeight: 'bold',
+                                    color: COLORS.BLACK,
+                                    textAlign: 'center',
+                                }}>{item.jabatan}</Text>
+                            </View>
+                            {/* <Pressable onPress={() => setPengikut(pengikut.filter(it => it.id !== item.id))}>
+                                <Icon name={'trash'} color={COLORS.RED} size={25} />
+                            </Pressable> */}
+                        </View>
+                    ))}
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nomor Sprint</Text>
-                    <Input placeholder={'Nomor Sprint...'} style={{ flex: 1 }} value={nomorSprint} onChangeText={text => setNomorSprint(text)} />
+                    <View style={{
+                        flexDirection:'row',
+                        alignItems:'center',
+                        borderRadius: 8,
+                        borderWidth: 1,
+                        borderColor: 'gray',
+                        paddingHorizontal: 9
+                    }}>
+                        <Text style={{
+                            color: 'black',
+                            fontSize: 17
+                        }}>SPRINT -</Text>
+                        <Input
+                            noBorder 
+                            placeholder={'Nomor Sprint...'} 
+                            style={{ flex: 1, paddingHorizontal: 3 }} 
+                            value={nomorSprint} 
+                            onChangeText={text => setNomorSprint(text)} 
+                        />
+                    </View>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nomor SPPD</Text>
-                    <Input placeholder={'Nomor SPPD...'} style={{ flex: 1 }} value={nomorSPPD} onChangeText={text => setNomorSPPD(text)} />
+                    <View style={{
+                        flexDirection:'row',
+                        alignItems:'center',
+                        borderRadius: 8,
+                        borderWidth: 1,
+                        borderColor: 'gray',
+                        paddingHorizontal: 9
+                    }}>
+                        <Text style={{
+                            color: 'black',
+                            fontSize: 17
+                        }}>SPPD -</Text>
+                        <Input 
+                            noBorder
+                            placeholder={'Nomor SPPD...'} 
+                            style={{ flex: 1, paddingHorizontal: 3 }} 
+                            value={nomorSPPD} 
+                            onChangeText={text => setNomorSPPD(text)} 
+                        />
+                    </View>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Maksud Perjalanan Dinas</Text>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Icon from 'react-native-vector-icons/Ionicons'
 import { ScrollView, StyleSheet, Text, View, Pressable, Alert } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
@@ -48,6 +49,7 @@ const ESIPD = ({ navigation }) => {
     // Anggota
     const [anggota, setAnggota] = useState();
     const [selectedAnggota, setSelectedAnggota] = useState();
+    const [pengikut, setPengikut] = useState([]);
     const [daftarAnggota, setDaftarAnggota] = useState([]);
 
     // Perjalanan Dinas
@@ -96,8 +98,8 @@ const ESIPD = ({ navigation }) => {
         } else {
             const data = {
                 keterangan,
-                nomor_sprint: nomorSprint,
-                nomor_sppd: nomorSPPD,
+                nomor_sprint: `SPRINT-${nomorSprint}`,
+                nomor_sppd: `SPPD-${nomorSPPD}`,
                 jenis_perjalanan: jenisPerjalanan,
                 daerah_tujuan: provinsi,
                 kota_asal: lokasiAsal,
@@ -105,7 +107,8 @@ const ESIPD = ({ navigation }) => {
                 tgl_berangkat: String(tanggalBerangkat),
                 tgl_kembali: String(tanggalKembali),
                 transportasi: transportasi,
-                penerima: anggota
+                penerima: pengikut[0]?.id || anggota,
+                pejalan: pengikut
             }
     
             createPerjalanan(token, data)
@@ -158,9 +161,27 @@ const ESIPD = ({ navigation }) => {
         if(provinsi) {
             if(jenisPerjalanan == 'dalam_kota') {
                 setKota(daftarTujuan[0])
-                setDaftarKota(daftarTujuan)
+                setDaftarKota(
+                    daftarTujuan.reduce((acc, current) => {
+                        const isDuplicate = acc.some(item => item.lokasi_tujuan === current.lokasi_tujuan);
+                        if (!isDuplicate) {
+                        acc.push(current);
+                        }
+                        return acc;
+                    }, [])
+                )
             } else if(jenisPerjalanan == 'luar_kota' && provinsi != 'Pilih Provinsi') {
-                const newDaftarTujuan = daftarTujuan.filter(item => item.provinsi == provinsi);
+                const newDaftarTujuan = 
+                    daftarTujuan
+                        .filter(item => item.provinsi == provinsi)
+                        .reduce((acc, current) => {
+                            const isDuplicate = acc.some(item => item.lokasi_tujuan === current.lokasi_tujuan);
+                            if (!isDuplicate) {
+                            acc.push(current);
+                            }
+                            return acc;
+                        }, []);
+                      
                 setKota(newDaftarTujuan[0])
                 setDaftarKota(newDaftarTujuan)
             } else {
@@ -247,7 +268,11 @@ const ESIPD = ({ navigation }) => {
                             selectedValue={anggota}
                             style={{ color: 'black' }}
                             onValueChange={itemValue => {
-                                setSelectedAnggota(daftarAnggota.find(item => item.id == itemValue));
+                                const newAnggota = daftarAnggota.find(item => item.id == itemValue)
+                                setSelectedAnggota(newAnggota);
+                                if(!pengikut.some(item => item.id === newAnggota.id)) 
+                                    pengikut.push(newAnggota)
+                                    // setPengikut([...pengikut, newAnggota])
                                 setAnggota(itemValue)
                             }}
                         >   
@@ -263,7 +288,7 @@ const ESIPD = ({ navigation }) => {
                     </View>
                 </View>
                 
-                <View style={styles.menu}>
+                {/* <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nama</Text>
                     <Text style={styles.text}>{selectedAnggota?.nama}</Text>
                 </View>
@@ -274,14 +299,92 @@ const ESIPD = ({ navigation }) => {
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Jabatan</Text>
                     <Text style={styles.text}>{selectedAnggota?.jabatan}</Text>
+                </View> */}
+
+                <View style={styles.menu}>
+                    <Text style={styles.menuTxt}>Pejalan</Text>
+                    {pengikut.map((item, index) => (
+                        <View key={index} style={{
+                            marginBottom: 8,
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            borderColor: COLORS.GRAY,
+                            padding: 10,
+                            flexDirection: 'row',
+                            alignItems: 'center'
+                        }}>
+                            <View style={{ flexGrow: 1 }}>
+                                <Text style={{
+                                    fontSize: 17,
+                                    fontWeight: 'bold',
+                                    color: COLORS.BLACK,
+                                    textAlign: 'center',
+                                }}>{item.nama}</Text>
+                                <Text style={{
+                                    fontSize: 17,
+                                    fontWeight: 'bold',
+                                    color: COLORS.BLACK,
+                                    textAlign: 'center',
+                                }}>{item.pangkat}</Text>
+                                <Text style={{
+                                    fontSize: 17,
+                                    fontWeight: 'bold',
+                                    color: COLORS.BLACK,
+                                    textAlign: 'center',
+                                }}>{item.jabatan}</Text>
+                            </View>
+                            <Pressable onPress={() => setPengikut(pengikut.filter(it => it.id !== item.id))}>
+                                <Icon name={'trash'} color={COLORS.RED} size={25} />
+                            </Pressable>
+                        </View>
+                    ))}
                 </View>
+
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nomor Sprint</Text>
-                    <Input placeholder={'Nomor Sprint...'} style={{ flex: 1 }} value={nomorSprint} onChangeText={text => setNomorSprint(text)} />
+                    <View style={{
+                        flexDirection:'row',
+                        alignItems:'center',
+                        borderRadius: 8,
+                        borderWidth: 1,
+                        borderColor: 'gray',
+                        paddingHorizontal: 9
+                    }}>
+                        <Text style={{
+                            color: 'black',
+                            fontSize: 17
+                        }}>SPRINT -</Text>
+                        <Input
+                            noBorder 
+                            placeholder={'Nomor Sprint...'} 
+                            style={{ flex: 1, paddingHorizontal: 3 }} 
+                            value={nomorSprint} 
+                            onChangeText={text => setNomorSprint(text)} 
+                        />
+                    </View>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Nomor SPPD</Text>
-                    <Input placeholder={'Nomor SPPD...'} style={{ flex: 1 }} value={nomorSPPD} onChangeText={text => setNomorSPPD(text)} />
+                    <View style={{
+                        flexDirection:'row',
+                        alignItems:'center',
+                        borderRadius: 8,
+                        borderWidth: 1,
+                        borderColor: 'gray',
+                        paddingHorizontal: 9
+                    }}>
+                        <Text style={{
+                            color: 'black',
+                            fontSize: 17
+                        }}>SPPD -</Text>
+                        <Input 
+                            noBorder
+                            placeholder={'Nomor SPPD...'} 
+                            style={{ flex: 1, paddingHorizontal: 3 }} 
+                            value={nomorSPPD} 
+                            onChangeText={text => setNomorSPPD(text)} 
+                        />
+                    </View>
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Maksud Perjalanan Dinas</Text>
@@ -315,6 +418,39 @@ const ESIPD = ({ navigation }) => {
                         </Picker>
                     </View>
                 </View>
+                <View style={styles.menu}>
+                    <Text style={styles.menuTxt}>Tanggal Berangkat</Text>
+                    <Pressable onPress={() => setShowTanggalBerangkat(!showTanggalBerangkat)}>
+                        <Text style={styles.text}>{tanggalBerangkat.toLocaleDateString()}</Text>
+                    </Pressable>
+                    {showTanggalBerangkat && (
+                        <DateTimePicker
+                            testID="dateTimePicker"
+                            value={tanggalBerangkat}
+                            mode={'date'}
+                            is24Hour={true}
+                            onChange={onChangeBerangkatDate}
+                            minimumDate={new Date()}
+                        />
+                    )}
+                </View>
+                <View style={styles.menu}>
+                    <Text style={styles.menuTxt}>Tanggal Kembali</Text>
+                    <Pressable onPress={() => setShowTanggalKembali(!showTanggalKembali)}>
+                        <Text style={styles.text}>{tanggalKembali.toLocaleDateString()}</Text>
+                    </Pressable>
+                    {showTanggalKembali && (
+                        <DateTimePicker
+                            testID="dateTimePicker"
+                            value={tanggalKembali}
+                            mode={'date'}
+                            is24Hour={true}
+                            onChange={onChangeKembaliDate}
+                            minimumDate={tanggalBerangkat}
+                        />
+                    )}
+                </View>
+                <View style={{ borderWidth: 1, width: '100%', borderColor: COLORS.GRAY, marginVertical: 10 }} />
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Daerah Tujuan</Text>
                     <View
@@ -372,39 +508,6 @@ const ESIPD = ({ navigation }) => {
                         </Picker>
                     </View>
                 </View>
-                <View style={styles.menu}>
-                    <Text style={styles.menuTxt}>Tanggal Berangkat</Text>
-                    <Pressable onPress={() => setShowTanggalBerangkat(!showTanggalBerangkat)}>
-                        <Text style={styles.text}>{tanggalBerangkat.toLocaleDateString()}</Text>
-                    </Pressable>
-                    {showTanggalBerangkat && (
-                        <DateTimePicker
-                            testID="dateTimePicker"
-                            value={tanggalBerangkat}
-                            mode={'date'}
-                            is24Hour={true}
-                            onChange={onChangeBerangkatDate}
-                            minimumDate={new Date()}
-                        />
-                    )}
-                </View>
-                <View style={styles.menu}>
-                    <Text style={styles.menuTxt}>Tanggal Kembali</Text>
-                    <Pressable onPress={() => setShowTanggalKembali(!showTanggalKembali)}>
-                        <Text style={styles.text}>{tanggalKembali.toLocaleDateString()}</Text>
-                    </Pressable>
-                    {showTanggalKembali && (
-                        <DateTimePicker
-                            testID="dateTimePicker"
-                            value={tanggalKembali}
-                            mode={'date'}
-                            is24Hour={true}
-                            onChange={onChangeKembaliDate}
-                            minimumDate={tanggalBerangkat}
-                        />
-                    )}
-                </View>
-                <View style={{ borderWidth: 1, width: '100%', borderColor: COLORS.GRAY, marginVertical: 10 }} />
                 <View style={[styles.menu, {zIndex: 3}]}>
                     <Text style={styles.menuTxt}>Transportasi</Text>
                     <View
@@ -434,7 +537,7 @@ const ESIPD = ({ navigation }) => {
                         </Picker>
                     </View>
                 </View>
-                <View style={[styles.menu, {zIndex: 2}]}>
+                {/* <View style={[styles.menu, {zIndex: 2}]}>
                     <Text style={styles.menuTxt}>Lokasi Asal</Text>
                     <View
                         style={styles.picker}
@@ -493,7 +596,7 @@ const ESIPD = ({ navigation }) => {
                             }
                         </Picker>
                     </View>
-                </View>
+                </View> */}
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Jarak</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -534,9 +637,9 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         borderColor: COLORS.GRAY,
+        padding: 10,
         width: '100%',
         textAlign: 'center',
-        padding: 10,
     },
     footer: {
         flexDirection: 'row',

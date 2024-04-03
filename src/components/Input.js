@@ -1,10 +1,18 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import React from 'react'
 
-const Input = ({ placeholder = 'Input Here...', style, value, onChangeText, secureTextEntry, ...props }) => {
+const Input = ({ 
+  placeholder = 'Input Here...',
+  style, 
+  value, 
+  onChangeText, 
+  secureTextEntry, 
+  noBorder =false,
+  ...props 
+}) => {
   return <TextInput 
             placeholder={placeholder} 
-            style={[styles.input, style]} 
+            style={[styles.input, style, noBorder && { borderWidth: 0 }]} 
             secureTextEntry={secureTextEntry} 
             placeholderTextColor='gray' 
             value={value} 

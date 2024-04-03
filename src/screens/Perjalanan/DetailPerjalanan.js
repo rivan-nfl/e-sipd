@@ -147,7 +147,9 @@ const DetailPerjalanan = ({ route, navigation }) => {
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Pejalan</Text>
-                    <Text style={styles.text}>{params.penerima}</Text>
+                    {params?.pejalan && (JSON.parse(params?.pejalan)).map((item, index) => (
+                        <Text key={index} style={[styles.text, { marginBottom: 8 }]}>{item.nama}, {item.pangkat}, {item.jabatan}</Text>
+                    ))}
                 </View>
                 <View style={styles.menu}>
                     <Text style={styles.menuTxt}>Diajukan Pada</Text>
