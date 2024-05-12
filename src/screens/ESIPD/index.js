@@ -98,7 +98,7 @@ const ESIPD = ({ navigation }) => {
         } else {
             const data = {
                 keterangan,
-                nomor_sprint: `SPRINT-${nomorSprint}`,
+                nomor_sprint: `SPRIN-${nomorSprint}`,
                 nomor_sppd: `SPPD-${nomorSPPD}`,
                 jenis_perjalanan: jenisPerjalanan,
                 daerah_tujuan: provinsi,
@@ -353,7 +353,7 @@ const ESIPD = ({ navigation }) => {
                         <Text style={{
                             color: 'black',
                             fontSize: 17
-                        }}>SPRINT -</Text>
+                        }}>SPRIN -</Text>
                         <Input
                             noBorder 
                             placeholder={'Nomor Sprint...'} 

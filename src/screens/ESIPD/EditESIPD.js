@@ -99,7 +99,7 @@ const EditESIPD = ({ navigation, route }) => {
         } else {
             const data = {
                 keterangan,
-                nomor_sprint: `SPRINT-${nomorSprint}`,
+                nomor_sprint: `SPRIN-${nomorSprint}`,
                 nomor_sppd: `SPPD-${nomorSPPD}`,
                 jenis_perjalanan: jenisPerjalanan,
                 daerah_tujuan: provinsi,
@@ -325,7 +325,7 @@ const EditESIPD = ({ navigation, route }) => {
                     ))}
                 </View>
                 <View style={styles.menu}>
-                    <Text style={styles.menuTxt}>Nomor Sprint</Text>
+                    <Text style={styles.menuTxt}>Nomor Sprin</Text>
                     <View style={{
                         flexDirection:'row',
                         alignItems:'center',

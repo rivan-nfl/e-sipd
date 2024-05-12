@@ -2,9 +2,9 @@ import React from 'react'
 import { StyleSheet, Text, Pressable } from 'react-native'
 import { COLORS } from '../utils/colors'
 
-const CustomButton = ({ title = 'Button', style, buttonStyle, onPress }) => {
+const CustomButton = ({ title = 'Button', style, buttonStyle, onPress, disabled }) => {
   return (
-    <Pressable onPress={onPress} style={[styles.btn, buttonStyle]}>
+    <Pressable onPress={onPress} style={[styles.btn, disabled && { backgroundColor: COLORS.GRAY }, buttonStyle]} disabled={disabled}>
       <Text style={[styles.buttonText, style]}>{title}</Text>
     </Pressable>
   )

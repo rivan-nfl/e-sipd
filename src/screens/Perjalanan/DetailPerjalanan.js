@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View, ScrollView, Modal } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Modal, Linking } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
@@ -10,6 +10,7 @@ import { COLORS } from '../../utils/colors';
 import Layout from '../../components/Layout';
 import CustomButton from '../../components/Button';
 import Input from '../../components/Input';
+import { getDateSignFormat } from '../../utils/string';
 
 const DetailPerjalanan = ({ route, navigation }) => {
     const dispatch = useDispatch()
@@ -19,11 +20,292 @@ const DetailPerjalanan = ({ route, navigation }) => {
 
     const { params } = route;
 
+    const [isLoading, setIsLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [keterangan, setKeterangan] = useState('')
     const [status, setStatus] = useState(params.status)
     const [anggaran, setAnggaran] = useState('')
     const [anggaranBody, setAnggaranBody] = useState({})
+
+    // console.log(params)
+
+    const downloadReport = async () => {
+        setIsLoading(true)
+
+        const pejalan = JSON.parse(params?.pejalan)
+        const anggaran = JSON.parse(params?.anggaran)
+        const data = {
+            nama: pejalan[0]?.nama,
+            pangkat: pejalan[0]?.pangkat,
+            nrp: pejalan[0]?.nrp,
+            jabatan: pejalan[0]?.jabatan,
+            kesatuan: '',
+            daftarPengikut: [],
+            sprint: params?.nomor_sprint,
+            sppd: params?.nomor_sppd,
+            perjalananDinas: '',
+            biaya: anggaran
+        }
+        const semuaJabatan = {}
+        let totalPengikut = 0
+        pejalan?.map(item => {
+            semuaJabatan[item.jabatan] = semuaJabatan[item.jabatan] + 1 || 1
+            totalPengikut += 1
+        })
+
+        const signDate = getDateSignFormat(new Date(params.updated_at))
+
+        let parameters = {};
+
+        // Input HTML code to be converted. Required.
+        parameters["html"] = `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Document</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                body {
+                    font-size: 12px;
+                    font-family: Arial, Helvetica, sans-serif;
+                }
+                .pdf-container {
+                    width: 992px;
+                    min-height: 1403px;
+                    border: 1px solid grey;
+                }
+                .header {
+                    height: 50px;
+                    border-bottom: 1px solid grey;
+                    padding: 10px 30px;
+                    display: flex;
+                    justify-content: space-between;
+                    font-weight: bold;
+                }
+                .content {
+                    padding: 10px 30px;
+                }
+                .top-title {
+                    text-align: center;
+                    font-weight: bold;
+                    margin-bottom: 15px;
+                }
+                .top-desc {
+                    display: flex;
+                    margin-bottom: 5px;
+                }
+                .top-desc-1 {
+                    width: 30%;
+                }
+                .top-desc-2 {
+                    width: 60%;
+                    border-bottom: 1px dashed black;
+                }
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin: 15px 0;
+                    text-align: center;
+                }
+                table, th, td {
+                    border: 1px solid;
+                    padding: 5px;
+                }
+                .date-sign {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-top: 30px;
+                    margin-bottom: 10px;
+                }
+                .sign-container {
+                    display: flex;
+                    justify-content: space-between;
+                }
+                .sign-content {
+                    text-align: center;
+                }
+                .sign-content p {
+                    margin-bottom: 8px;
+                }
+            </style>
+        </head>
+        <body>
+            <!-- PDF -->
+            <section class="pdf-container">
+                <div class="header">
+                    <p>KOPSTUK</p>
+                    <p>KU - 4</p>
+                </div>
+                <div class="content">
+                    <p class="top-title">DAFTAR PERHITUNGAN BIAYA PERJALANAN DINAS</p>
+        
+                    <div class="top-desc">
+                        <p class="top-desc-1">1. Nama</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2">${data.nama}</p>
+                    </div>
+                    <div class="top-desc">
+                        <p class="top-desc-1">2. Pangkat/Gol, NRP/NIP</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2">${data.pangkat}, ${data.nrp}</p>
+                    </div>
+                    <div class="top-desc">
+                        <p class="top-desc-1">3. Jabatan</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2">${data.jabatan}</p>
+                    </div>
+                    <div class="top-desc">
+                        <p class="top-desc-1">4. Kesatuan</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2">${data.kesatuan || ''}</p>
+                    </div>
+                    <div class="top-desc">
+                        <p class="top-desc-1">5. Daftar Pengikut</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2"></p>
+                    </div>
+        
+                    <table>
+                        <thead>
+                            <th>PERJALANAN DINAS JABATAN</th>
+                            <th>PERJALANAN DINAS ORANG</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    ${Object.entries(semuaJabatan).map(([key, value]) => `
+                                    <p>${key}</p>
+                                    `).join('')}
+                                </td>
+                                <td>
+                                    ${Object.entries(semuaJabatan).map(([key, value]) => `
+                                    <p>${value}</p>
+                                    `).join('')}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Jumlah Pengikut : ${totalPengikut} Orang
+                                </td>
+                                <td>
+                                    Jumlah Pengikut : ${totalPengikut} Orang
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+        
+                    <div class="top-desc">
+                        <p class="top-desc-1">6. Surat Perinth (Sprin)</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2">${data.sprint}</p>
+                    </div>
+                    <div class="top-desc">
+                        <p class="top-desc-1">7. Surat Perjalanan Dinas (SPPD)</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2">${data.sppd}</p>
+                    </div>
+                    <div class="top-desc">
+                        <p class="top-desc-1">8. Perjalanan Dinas</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2">${data.perjalananDinas}</p>
+                    </div>
+                    <div class="top-desc">
+                        <p class="top-desc-1">9. Hak atas biaya perjalanan dinas</p>
+                        <p style="width: 3%;">:</p>
+                    </div>
+        
+                    <table>
+                        <thead>
+                            <th>PERHITUNGAN BIAYA</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p>${anggaran?.biayaHarianInfo}</p>
+                                    <p>${anggaran?.biayaPenginapanInfo}</p>
+                                    <p>${anggaran?.uangRepresentasiInfo}</p>
+                                    <p>${anggaran?.biayaBBMDanPelumasInfo || anggaran?.biayaTransportInfo}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    JUMLAH ${Number(anggaran?.total).toLocaleString()}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+        
+                    <div class="top-desc">
+                        <p class="top-desc-1">Terbilang</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2">${Number(anggaran?.total).toLocaleString()}</p>
+                    </div>
+                    <div class="top-desc">
+                        <p class="top-desc-1">Keterangan</p>
+                        <p style="width: 3%;">:</p>
+                        <p class="top-desc-2"></p>
+                    </div>
+        
+                    <div class="date-sign">
+                        <p>Surabaya, ${signDate}</p>
+                    </div>
+                    <div class="sign-container">
+                        <div class="sign-content">
+                            <p>Mengetahui</p>
+                            <p>Pejabat Pembuat Komitmen</p>
+                        </div>
+                        <div class="sign-content">
+                            <p>Yang Membuat Perhitungan</p>
+                            <p>Bendahara Pengeluaran</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </body>
+        </html>`;
+        // Name of resulting file
+        parameters["name"] = `Laporan-${data.sprint || ''}-${data.sppd || ''}.pdf`;
+        // Set to css style margins like 10 px or 5px 5px 5px 5px.
+        parameters["margins"] = "0px 0px 0px 0px";
+        // Can be Letter, A4, A5, A6 or custom size like 200x200
+        parameters["paperSize"] = "A4";
+        // Set to Portrait or Landscape. Portrait by default.
+        parameters["orientation"] = "Portrait";
+        // true by default. Set to false to disbale printing of background.
+        parameters["printBackground"] = true;
+        parameters["mediaType"] = 'screen';
+        // If large input document, process in async mode by passing true
+        // parameters["async"] = true;
+        // Set to HTML for header to be applied on every page at the header.
+        // parameters["header"] = "";
+        // Set to HTML for footer to be applied on every page at the bottom.
+        // parameters["footer"] = "";
+
+        // Convert JSON object to string
+        var jsonPayload = JSON.stringify(parameters);
+
+        const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
+            method: 'POST',
+            headers: {
+                "x-api-key": 'rivz.tech@gmail.com_Qz5t1C7e90t85g872aP5Y3K39S8812b1vnDH1F2P9Ah9klRpwqe7G5Ur3IU83ec2',
+                "Content-Type": "application/json",
+            },
+            body: jsonPayload
+        }).then(res => res.json())
+
+        setIsLoading(false)
+        if (response?.status !== 200) {
+            alert('Terjadi kesalahan saat mendownload CV')
+        } else if (response?.status === 200) {
+            // console.log(response.url)
+            await Linking.openURL(response.url);
+        }
+    }
 
     const handlePickImage = () => {
         const options = {
@@ -34,7 +316,7 @@ const DetailPerjalanan = ({ route, navigation }) => {
             if(res.didCancel) {
                 console.log('User Canceled')
             } else {
-                console.log('Cam', res.assets[0])
+                // console.log('Cam', res.assets[0])
                 handleSelesaiPerjalanan()
             }
         });
@@ -216,10 +498,11 @@ const DetailPerjalanan = ({ route, navigation }) => {
             { (status == 'approved' && userRole == 'anggota') && (
                 <View style={styles.footer}>
                     {/* <CustomButton title='Selesai Perjalanan' buttonStyle={{ width: '100%' }} onPress={() => handleSelesaiPerjalanan()} /> */}
+                    <CustomButton disabled={isLoading} title='Download Laporan' buttonStyle={{ width: '100%', marginBottom: 8 }} onPress={downloadReport} />
                     <CustomButton title='Selesai Perjalanan' buttonStyle={{ width: '100%' }} onPress={handlePickImage} />
                 </View>
             )}
-            
+
         </Layout>
         <Modal
             animationType="slide"
@@ -274,7 +557,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     footer: {
-        flexDirection: 'row', 
+        // flexDirection: 'row', 
         width: '100%',
         justifyContent: 'space-around', 
     },
