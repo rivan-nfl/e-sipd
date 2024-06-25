@@ -27,8 +27,6 @@ const DetailPerjalanan = ({ route, navigation }) => {
     const [anggaran, setAnggaran] = useState('')
     const [anggaranBody, setAnggaranBody] = useState({})
 
-    // console.log(params)
-
     const downloadReport = async () => {
         setIsLoading(true)
 
@@ -43,7 +41,7 @@ const DetailPerjalanan = ({ route, navigation }) => {
             daftarPengikut: [],
             sprint: params?.nomor_sprint,
             sppd: params?.nomor_sppd,
-            perjalananDinas: '',
+            perjalananDinas: `${params.kota_asal} ke ${params.kota_tujuan} (PP)`,
             biaya: anggaran
         }
         const semuaJabatan = {}
@@ -143,7 +141,6 @@ const DetailPerjalanan = ({ route, navigation }) => {
                 </div>
                 <div class="content">
                     <p class="top-title">DAFTAR PERHITUNGAN BIAYA PERJALANAN DINAS</p>
-        
                     <div class="top-desc">
                         <p class="top-desc-1">1. Nama</p>
                         <p style="width: 3%;">:</p>
@@ -152,7 +149,7 @@ const DetailPerjalanan = ({ route, navigation }) => {
                     <div class="top-desc">
                         <p class="top-desc-1">2. Pangkat/Gol, NRP/NIP</p>
                         <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">${data.pangkat}, ${data.nrp}</p>
+                        <p class="top-desc-2">${data.pangkat}, NRP ${data.nrp}</p>
                     </div>
                     <div class="top-desc">
                         <p class="top-desc-1">3. Jabatan</p>
@@ -167,9 +164,8 @@ const DetailPerjalanan = ({ route, navigation }) => {
                     <div class="top-desc">
                         <p class="top-desc-1">5. Daftar Pengikut</p>
                         <p style="width: 3%;">:</p>
-                        <p class="top-desc-2"></p>
+                        <p class="top-desc-2">${totalPengikut} Orang</p>
                     </div>
-        
                     <table>
                         <thead>
                             <th>PERJALANAN DINAS JABATAN</th>
@@ -198,19 +194,18 @@ const DetailPerjalanan = ({ route, navigation }) => {
                             </tr>
                         </tbody>
                     </table>
-        
                     <div class="top-desc">
-                        <p class="top-desc-1">6. Surat Perinth (Sprin)</p>
+                        <p class="top-desc-1">6. Surat Perintah (Sprin)</p>
                         <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">${data.sprint}</p>
+                        <p class="top-desc-2">Dari Pangdam V/Brw ${data.sprint} tanggal ${new Date(params.tgl_berangkat).toLocaleDateString()}</p>
                     </div>
                     <div class="top-desc">
                         <p class="top-desc-1">7. Surat Perjalanan Dinas (SPPD)</p>
                         <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">${data.sppd}</p>
+                        <p class="top-desc-2">Dari Pangdam V/Brw ${data.sppd} tanggal ${new Date(params.tgl_berangkat).toLocaleDateString()}</p>
                     </div>
                     <div class="top-desc">
-                        <p class="top-desc-1">8. Perjalanan Dinas</p>
+                        <p class="top-desc-1">8. Perjalanan Dinas Dari</p>
                         <p style="width: 3%;">:</p>
                         <p class="top-desc-2">${data.perjalananDinas}</p>
                     </div>
@@ -218,7 +213,6 @@ const DetailPerjalanan = ({ route, navigation }) => {
                         <p class="top-desc-1">9. Hak atas biaya perjalanan dinas</p>
                         <p style="width: 3%;">:</p>
                     </div>
-        
                     <table>
                         <thead>
                             <th>PERHITUNGAN BIAYA</th>
@@ -239,18 +233,11 @@ const DetailPerjalanan = ({ route, navigation }) => {
                             </tr>
                         </tbody>
                     </table>
-        
-                    <div class="top-desc">
-                        <p class="top-desc-1">Terbilang</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">${Number(anggaran?.total).toLocaleString()}</p>
-                    </div>
                     <div class="top-desc">
                         <p class="top-desc-1">Keterangan</p>
                         <p style="width: 3%;">:</p>
                         <p class="top-desc-2"></p>
                     </div>
-        
                     <div class="date-sign">
                         <p>Surabaya, ${signDate}</p>
                     </div>
@@ -292,7 +279,7 @@ const DetailPerjalanan = ({ route, navigation }) => {
         const response = await fetch('https://api.pdf.co/v1/pdf/convert/from/html', {
             method: 'POST',
             headers: {
-                "x-api-key": 'rivz.tech@gmail.com_Qz5t1C7e90t85g872aP5Y3K39S8812b1vnDH1F2P9Ah9klRpwqe7G5Ur3IU83ec2',
+                "x-api-key": 's160417166@student.ubaya.ac.id_Dr1T2oZkkAW0146B8RcFi4S88JZrD5x2Z7Nfi1jFz0gU8bU2L41FDiyANhu3Apd2',
                 "Content-Type": "application/json",
             },
             body: jsonPayload
@@ -300,7 +287,7 @@ const DetailPerjalanan = ({ route, navigation }) => {
 
         setIsLoading(false)
         if (response?.status !== 200) {
-            alert('Terjadi kesalahan saat mendownload CV')
+            return alert(`Terjadi kesalahan saat mendownload Laporan :\n${response.message}`)
         } else if (response?.status === 200) {
             // console.log(response.url)
             await Linking.openURL(response.url);
@@ -562,10 +549,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around', 
     },
     editBtn: {
-        width: '45%',
+        width: '100%',
+        marginBottom: 8
     },
     deleteBtn: {
-        width: '45%',
+        width: '100%',
         backgroundColor: COLORS.WHITE,
         borderWidth: 1,
     },
