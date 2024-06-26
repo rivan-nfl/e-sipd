@@ -44,12 +44,21 @@ const DetailPerjalanan = ({ route, navigation }) => {
             perjalananDinas: `${params.kota_asal} ke ${params.kota_tujuan} (PP)`,
             biaya: anggaran
         }
-        const semuaJabatan = {}
         let totalPengikut = 0
         pejalan?.map(item => {
-            semuaJabatan[item.jabatan] = semuaJabatan[item.jabatan] + 1 || 1
             totalPengikut += 1
         })
+
+        // Dates
+        const tglBerangkat = new Date(params.tgl_berangkat)
+        const tglKembali = new Date(params.tgl_kembali)
+        const createdDate = new Date()
+
+        // Calculate the difference in milliseconds
+        const differenceInMs = tglKembali - tglBerangkat;
+
+        // Convert milliseconds to days
+        const daysDifference = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
 
         const signDate = getDateSignFormat(new Date(params.updated_at))
 
@@ -78,7 +87,7 @@ const DetailPerjalanan = ({ route, navigation }) => {
                     border: 1px solid grey;
                 }
                 .header {
-                    height: 50px;
+                    height: 40px;
                     border-bottom: 1px solid grey;
                     padding: 10px 30px;
                     display: flex;
@@ -166,30 +175,32 @@ const DetailPerjalanan = ({ route, navigation }) => {
                         <p style="width: 3%;">:</p>
                         <p class="top-desc-2">${totalPengikut} Orang</p>
                     </div>
-                    <table>
+                    <table style="text-align: left;">
                         <thead>
-                            <th>PERJALANAN DINAS JABATAN</th>
-                            <th>PERJALANAN DINAS ORANG</th>
+                            <th style="padding: 5px 10px;">PERJALANAN DINAS JABATAN</th>
+                            <th style="padding: 5px 10px;">PERJALANAN DINAS PINDAH</th>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>
-                                    ${Object.entries(semuaJabatan).map(([key, value]) => `
-                                    <p>${key}</p>
+                                <td style="padding: 15px 10px; vertical-align: top;">
+                                    ${pejalan?.map((item, index) => `
+                                        <p>${index + 1}. ${item.pangkat}, ${item.nama}, ${item.nrp}</p>
                                     `).join('')}
                                 </td>
-                                <td>
-                                    ${Object.entries(semuaJabatan).map(([key, value]) => `
-                                    <p>${value}</p>
-                                    `).join('')}
+                                <td style="padding: 15px 10px;">
+                                    <div style="display: flex; justify-content: space-between;"><p>1. Istri/Suami</p><p>.......... Orang</p></div>
+                                    <div style="display: flex; justify-content: space-between;"><p>2. Anak (12 Tahun Keatas)</p><p>.......... Orang</p></div>
+                                    <div style="display: flex; justify-content: space-between;"><p>(3 Sampai 12 Tahun)</p><p>.......... Orang</p></div>
+                                    <div style="display: flex; justify-content: space-between;"><p>(Dibawah 3 tahun)</p><p>.......... Orang</p></div>
+                                    <div style="display: flex; justify-content: space-between;"><p>3. Pembantu Rumah Tangga</p><p>.......... Orang</p></div>
                                 </td>
                             </tr>
                             <tr>
-                                <td>
+                                <td style="padding: 5px 10px;">
                                     Jumlah Pengikut : ${totalPengikut} Orang
                                 </td>
-                                <td>
-                                    Jumlah Pengikut : ${totalPengikut} Orang
+                                <td style="padding: 5px 10px;">
+                                    Jumlah Pengikut : .......... Orang
                                 </td>
                             </tr>
                         </tbody>
@@ -197,12 +208,12 @@ const DetailPerjalanan = ({ route, navigation }) => {
                     <div class="top-desc">
                         <p class="top-desc-1">6. Surat Perintah (Sprin)</p>
                         <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">Dari Pangdam V/Brw ${data.sprint} tanggal ${new Date(params.tgl_berangkat).toLocaleDateString()}</p>
+                        <p class="top-desc-2">Dari Pangdam V/Brw No ${data.sprint} tanggal ${new Date(params.tgl_berangkat).toLocaleDateString()}</p>
                     </div>
                     <div class="top-desc">
                         <p class="top-desc-1">7. Surat Perjalanan Dinas (SPPD)</p>
                         <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">Dari Pangdam V/Brw ${data.sppd} tanggal ${new Date(params.tgl_berangkat).toLocaleDateString()}</p>
+                        <p class="top-desc-2">Dari Pangdam V/Brw No ${data.sppd} tanggal ${new Date(params.tgl_berangkat).toLocaleDateString()}</p>
                     </div>
                     <div class="top-desc">
                         <p class="top-desc-1">8. Perjalanan Dinas Dari</p>
@@ -215,20 +226,127 @@ const DetailPerjalanan = ({ route, navigation }) => {
                     </div>
                     <table>
                         <thead>
-                            <th>PERHITUNGAN BIAYA</th>
+                            <th>JENIS BIAYA</th>
+                            <th style="width: 10%;">JUMLAH HARI</th>
+                            <th style="width: 40%;">PERHITUNGAN</th>
+                            <th>JUMLAH</th>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
+                                    <p>Uang Harian</p>
+                                </td>
+                                <td>
+                                    <p>${daysDifference}</p>
+                                </td>
+                                <td>
                                     <p>${anggaran?.biayaHarianInfo}</p>
-                                    <p>${anggaran?.biayaPenginapanInfo}</p>
-                                    <p>${anggaran?.uangRepresentasiInfo}</p>
-                                    <p>${anggaran?.biayaBBMDanPelumasInfo || anggaran?.biayaTransportInfo}</p>
+                                </td>
+                                <td>
+                                    <p>Rp. ${Number(anggaran?.biayaHarian).toLocaleString()}</p>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    JUMLAH ${Number(anggaran?.total).toLocaleString()}
+                                    <p>Uang Penginapan</p>
+                                </td>
+                                <td>
+                                    <p></p>
+                                </td>
+                                <td>
+                                    <p>${anggaran?.biayaPenginapanInfo}</p>
+                                </td>
+                                <td>
+                                    <p>Rp. ${Number(anggaran?.biayaPenginapan).toLocaleString()}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Uang Representasi</p>
+                                </td>
+                                <td>
+                                    <p></p>
+                                </td>
+                                <td>
+                                    <p>${anggaran?.uangRepresentasiInfo}</p>
+                                </td>
+                                <td>
+                                    <p>Rp. ${Number(anggaran?.uangRepresentasi).toLocaleString()}</p>
+                                </td>
+                            </tr>
+                            ${anggaran.biayaBBMDanPelumas
+                                ? `
+                                    <tr>
+                                        <td>
+                                            <p>Uang BBM dan Pelumas</p>
+                                        </td>
+                                        <td>
+                                            <p></p>
+                                        </td>
+                                        <td>
+                                            <p>${anggaran?.biayaBBMDanPelumasInfo}</p>
+                                        </td>
+                                        <td>
+                                            <p></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>BBM</p>
+                                        </td>
+                                        <td>
+                                            <p></p>
+                                        </td>
+                                        <td>
+                                            <p>PP</p>
+                                            <p>Jatah Harian</p>
+                                        </td>
+                                        <td>
+                                            <p>Rp. ${Number(anggaran?.biayaBBMDanPelumas?.BBM?.PP).toLocaleString()}</p>
+                                            <p>Rp. ${Number(anggaran?.biayaBBMDanPelumas?.BBM?.jathar).toLocaleString()}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Pelumas</p>
+                                        </td>
+                                        <td>
+                                            <p></p>
+                                        </td>
+                                        <td>
+                                            <p>PP</p>
+                                            <p>Jatah Harian</p>
+                                        </td>
+                                        <td>
+                                            <p>Rp. ${Number(anggaran?.biayaBBMDanPelumas?.pelumas?.PP).toLocaleString()}</p>
+                                            <p>Rp. ${Number(anggaran?.biayaBBMDanPelumas?.pelumas?.jathar).toLocaleString()}</p>
+                                        </td>
+                                    </tr>
+                                `
+                                : `
+                                    <tr>
+                                        <td>
+                                            <p>Uang Transportasi</p>
+                                            <p>${params?.transportasi}</p>
+                                        </td>
+                                        <td>
+                                            <p></p>
+                                        </td>
+                                        <td>
+                                            <p>${anggaran?.biayaTransportInfo}</p>
+                                        </td>
+                                        <td>
+                                            <p>Rp. ${Number(anggaran?.biayaTransport).toLocaleString()}</p>
+                                        </td>
+                                    </tr>
+                                `
+                            }
+                            <tr>
+                                <td colspan="3" style="text-align: left; padding-left: 10px;">
+                                    JUMLAH
+                                </td>
+                                <td>
+                                    Rp. ${Number(anggaran?.total).toLocaleString()}
                                 </td>
                             </tr>
                         </tbody>
