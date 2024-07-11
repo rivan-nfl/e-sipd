@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 import { baseUrl } from '../../service/apiConfig'
@@ -9,7 +9,9 @@ import Header from '../../components/Header'
 import photoProfile from '../../assets/images/pp.png'
 
 const DaftarAnggota = ({ navigation }) => {
+    const dispatch = useDispatch()
     const token = useSelector(state => state.auth.token)
+    const allAnggota = useSelector(state => state.anggota)
 
     const [dataAnggota, setDataAnggota] = useState([])
 
@@ -18,45 +20,53 @@ const DaftarAnggota = ({ navigation }) => {
             method: 'GET',
             url: `${baseUrl}/users`,
             headers: {
-              Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`
             },
             params: {
                 role: 'anggota'
             },
-          })
-          .then(res => {
-            setDataAnggota(res.data.data)
-          })
-          .catch(err => {
-            console.log('err =', err.response.data)
-            alert(err.response.data.message)
-          })
+        })
+            .then(res => {
+                setDataAnggota(res.data.data)
+                dispatch({ type: 'SAVE_ANGGOTA', data: res.data.data })
+            })
+            .catch(err => {
+                console.log('err =', err.response.data)
+                alert(err.response.data.message)
+            })
     }
 
-    useEffect(() => getAllAnggota(), [])
+    useEffect(() => {
+        getAllAnggota()
+    }, [])
 
     return (
         <View style={{ flex: 1 }}>
-        {/* Header */}
-        <Header title='Daftar Anggota' />
-        {/* Content */}
+            {/* Header */}
+            <Header title='Daftar Anggota' />
+            {/* Content */}
             <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: COLORS.WHITE }}>
-            <View style={styles.content}>
-                { dataAnggota.map((item, index) => (
-                    <Pressable
-                        key={index}
-                        style={styles.card}
-                        onPress={() => navigation.navigate('Detail Anggota', item)}
-                    >
-                        <View style={styles.photoContainer}>
-                            <Image source={item.foto ? {uri: item.foto} : photoProfile} style={styles.photo} />
-                        </View>
-                        <Text style={styles.anggotaTitle}>{item.nama}</Text>
-                        <Text style={styles.anggotaTitle}>{item.nrp}</Text>
-                        <Text style={styles.anggotaText}>{item.pangkat}</Text>
-                    </Pressable>
-                ))}
-            </View>
+                <View style={styles.content}>
+                    {allAnggota.map((item, index) => (
+                        <Pressable
+                            key={index}
+                            style={styles.card}
+                            onPress={() => navigation.navigate('Detail Anggota', item)}
+                        >
+                            <View style={styles.photoContainer}>
+                                <Image source={item.foto ? { uri: item.foto } : photoProfile} style={styles.photo} />
+                            </View>
+                            <Text style={styles.anggotaTitle}>{item.nama}</Text>
+                            <Text style={styles.anggotaTitle}>{item.nrp}</Text>
+                            <Text style={styles.anggotaText}>{item.pangkat}</Text>
+                            <Text
+                                style={[styles.anggotaTitle, { color: item.active ? COLORS.GREEN : COLORS.RED }]}
+                            >
+                                {item.active ? 'Aktif' : 'Non Aktif'}
+                            </Text>
+                        </Pressable>
+                    ))}
+                </View>
             </ScrollView>
             <Pressable
                 style={styles.btn}
@@ -72,8 +82,8 @@ export default DaftarAnggota
 
 const styles = StyleSheet.create({
     content: {
-        flex: 1, 
-        padding: 14, 
+        flex: 1,
+        padding: 14,
         backgroundColor: COLORS.WHITE,
         alignItems: 'center'
     },

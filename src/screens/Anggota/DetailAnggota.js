@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Dimensions, Image, StyleSheet, Text, View } from 'react-native'
+import { Alert, Dimensions, Image, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
 
 import { COLORS } from '../../utils/colors';
@@ -8,6 +8,8 @@ import CustomButton from '../../components/Button';
 import photoProfile from '../../assets/images/pp.png'
 
 import { deleteAnggota, getProfile } from '../../service/userService'
+import { baseUrl } from '../../service/apiConfig';
+import axios from 'axios';
 
 const DetailAnggota = ({ route, navigation }) => {
     const dispatch = useDispatch()
@@ -16,54 +18,88 @@ const DetailAnggota = ({ route, navigation }) => {
 
     const { params } = route;
 
+    const getAllAnggota = () => {
+        axios({
+            method: 'GET',
+            url: `${baseUrl}/users`,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            params: {
+                role: 'anggota'
+            },
+        })
+            .then(res => {
+                dispatch({ type: 'SAVE_ANGGOTA', data: res.data.data })
+            })
+            .catch(err => {
+                console.log('err =', err.response.data)
+                alert(err.response.data.message)
+            })
+    }
+
     const handleDeleteAnggota = () => {
         deleteAnggota(params.id, token)
-        .then(res => {
-            alert('Berhasil Menghapus Anggota')
-            navigation.navigate('Home')
-        })
-        .catch(err => {
-            console.log('err =', err.response.data)
-            alert(err.response.data.message)
-        })
+            .then(res => {
+                alert('Berhasil Menghapus Anggota')
+                getAllAnggota()
+                navigation.navigate('Home')
+            })
+            .catch(err => {
+                console.log('err =', err.response.data)
+                alert(err.response.data.message)
+            })
     }
 
     useEffect(() => {
         getProfile(params.id, token)
-        .then(res => {
-            dispatch({type: 'SAVE_CURRENT_USER', data: {
-                id: res.data.data.id,
-                nama: res.data.data.nama,
-                username: res.data.data.username,
-                nrp: res.data.data.nrp,
-                alamat: res.data.data.alamat,
-                pangkat: res.data.data.pangkat,
-                bagian: res.data.data.bagian,
-                foto: res.data.data.foto,
-                jabatan: res.data.data.jabatan,
-                role: res.data.data.role
-            }})
-        })
-        .catch(err => {
-            console.log('err =', err.response.data)
-            alert(err.response.data.message)
-        })
+            .then(res => {
+                dispatch({
+                    type: 'SAVE_CURRENT_USER', data: {
+                        id: res.data.data.id,
+                        nama: res.data.data.nama,
+                        username: res.data.data.username,
+                        nrp: res.data.data.nrp,
+                        alamat: res.data.data.alamat,
+                        pangkat: res.data.data.pangkat,
+                        bagian: res.data.data.bagian,
+                        foto: res.data.data.foto,
+                        jabatan: res.data.data.jabatan,
+                        role: res.data.data.role,
+                        aktif: res.data.data.active,
+                    }
+                })
+            })
+            .catch(err => {
+                console.log('err =', err.response.data)
+                alert(err.response.data.message)
+            })
     }, [])
 
     return (
         <Layout title='Detail Anggota'>
             <View style={styles.photoContainer}>
-                <Image source={user.foto ? {uri: user.foto} : photoProfile} style={styles.photo} />
+                <Image source={user.foto ? { uri: user.foto } : photoProfile} style={styles.photo} />
             </View>
             <View style={{ width: '80%', flex: 1 }}>
                 <Text style={styles.text}>{user.nama}</Text>
                 <Text style={styles.text}>{user.nrp}</Text>
                 <Text style={styles.text}>{user.pangkat}</Text>
                 <Text style={styles.text}>{user.jabatan}</Text>
+                <Text style={[styles.text, { color: user.aktif ? COLORS.GREEN : COLORS.RED }]}>{user.aktif ? 'Aktif' : 'Non Aktif'}</Text>
             </View>
             <View style={styles.footer}>
                 <CustomButton title='Edit' buttonStyle={styles.editBtn} onPress={() => navigation.navigate('Edit Anggota', user)} />
-                <CustomButton title='Delete' buttonStyle={styles.deleteBtn} style={styles.editBtnTxt} onPress={handleDeleteAnggota} />
+                <CustomButton title='Delete' buttonStyle={styles.deleteBtn} style={styles.editBtnTxt} onPress={() => {
+                    Alert.alert(
+                        "Hapus",
+                        "Yakin ingin menghapus ?",
+                        [
+                            { text: "Hapus", onPress: handleDeleteAnggota },
+                            { text: "Batal", onPress: null },
+                        ]
+                    );
+                }} />
             </View>
         </Layout>
     )
@@ -99,9 +135,9 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
     footer: {
-        flexDirection: 'row', 
+        flexDirection: 'row',
         width: '100%',
-        justifyContent: 'space-around', 
+        justifyContent: 'space-around',
     },
     editBtn: {
         width: '45%',

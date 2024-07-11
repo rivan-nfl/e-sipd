@@ -1,290 +1,327 @@
 <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Document</title>
-            <style>
-                * {
-                    margin: 0;
-                    padding: 0;
-                    box-sizing: border-box;
-                }
-                body {
-                    font-size: 12px;
-                    font-family: Arial, Helvetica, sans-serif;
-                }
-                .pdf-container {
-                    width: 992px;
-                    min-height: 1403px;
-                    border: 1px solid grey;
-                }
-                .header {
-                    height: 40px;
-                    border-bottom: 1px solid grey;
-                    padding: 10px 30px;
-                    display: flex;
-                    justify-content: space-between;
-                    font-weight: bold;
-                }
-                .content {
-                    padding: 10px 30px;
-                }
-                .top-title {
-                    text-align: center;
-                    font-weight: bold;
-                    margin-bottom: 15px;
-                }
-                .top-desc {
-                    display: flex;
-                    margin-bottom: 5px;
-                }
-                .top-desc-1 {
-                    width: 30%;
-                }
-                .top-desc-2 {
-                    width: 60%;
-                    border-bottom: 1px dashed black;
-                }
-                table {
-                    border-collapse: collapse;
-                    width: 100%;
-                    margin: 15px 0;
-                    text-align: center;
-                }
-                table, th, td {
-                    border: 1px solid;
-                    padding: 5px;
-                }
-                .date-sign {
-                    display: flex;
-                    justify-content: flex-end;
-                    margin-top: 30px;
-                    margin-bottom: 10px;
-                }
-                .sign-container {
-                    display: flex;
-                    justify-content: space-between;
-                }
-                .sign-content {
-                    text-align: center;
-                }
-                .sign-content p {
-                    margin-bottom: 8px;
-                }
-            </style>
-        </head>
-        <body>
-            <!-- PDF -->
-            <section class="pdf-container">
-                <div class="header">
-                    <p>KOPSTUK</p>
-                    <p>KU - 4</p>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-size: 12px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .pdf-container {
+            width: 992px;
+            min-height: 1403px;
+            border: 1px solid grey;
+        }
+
+        .header {
+            height: 40px;
+            border-bottom: 1px solid grey;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 10px 30px;
+        }
+
+        .top-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .top-desc {
+            display: flex;
+            margin-bottom: 5px;
+        }
+
+        .top-desc-1 {
+            width: 30%;
+        }
+
+        .top-desc-2 {
+            width: 60%;
+            border-bottom: 1px dashed black;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid;
+            padding: 5px;
+        }
+
+        .date-sign {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        .sign-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .sign-content {
+            text-align: center;
+        }
+
+        .sign-content p {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- PDF -->
+    <section class="pdf-container">
+        <div class="header">
+            <p>KOPSTUK</p>
+            <p>KU - 4</p>
+        </div>
+        <div class="content">
+            <p class="top-title">DAFTAR PERHITUNGAN BIAYA PERJALANAN DINAS</p>
+            <div class="top-desc">
+                <p class="top-desc-1">1. Nama</p>
+                <p style="width: 3%;">:</p>
+                <p class="top-desc-2">aaa</p>
+            </div>
+            <div class="top-desc">
+                <p class="top-desc-1">2. Pangkat/Gol, NRP/NIP</p>
+                <p style="width: 3%;">:</p>
+                <p class="top-desc-2">Kolonel, NRP 111111</p>
+            </div>
+            <div class="top-desc">
+                <p class="top-desc-1">3. Jabatan</p>
+                <p style="width: 3%;">:</p>
+                <p class="top-desc-2">fsfre</p>
+            </div>
+            <div class="top-desc">
+                <p class="top-desc-1">4. Kesatuan</p>
+                <p style="width: 3%;">:</p>
+                <p class="top-desc-2"></p>
+            </div>
+            <div class="top-desc">
+                <p class="top-desc-1">5. Daftar Pengikut</p>
+                <p style="width: 3%;">:</p>
+                <p class="top-desc-2">1 Orang</p>
+            </div>
+            <table style="text-align: left;">
+                <thead>
+                    <th style="padding: 5px 10px;">PERJALANAN DINAS JABATAN</th>
+                    <th style="padding: 5px 10px;">PERJALANAN DINAS PINDAH</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 15px 10px; vertical-align: top;">
+
+                            <p>1. Kolonel, aaa, 111111</p>
+
+                        </td>
+                        <td style="padding: 15px 10px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <p>1. Istri/Suami</p>
+                                <p>.......... Orang</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <p>2. Anak (12 Tahun Keatas)</p>
+                                <p>.......... Orang</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <p>(3 Sampai 12 Tahun)</p>
+                                <p>.......... Orang</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <p>(Dibawah 3 tahun)</p>
+                                <p>.......... Orang</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <p>3. Pembantu Rumah Tangga</p>
+                                <p>.......... Orang</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 10px;">
+                            Jumlah Pengikut : 1 Orang
+                        </td>
+                        <td style="padding: 5px 10px;">
+                            Jumlah Pengikut : .......... Orang
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="top-desc">
+                <p class="top-desc-1">6. Surat Perintah (Sprin)</p>
+                <p style="width: 3%;">:</p>
+                <p class="top-desc-2">Dari Pangdam V/Brw No SPRIN-1221231 tanggal 7/12/2024</p>
+            </div>
+            <div class="top-desc">
+                <p class="top-desc-1">7. Surat Perjalanan Dinas (SPPD)</p>
+                <p style="width: 3%;">:</p>
+                <p class="top-desc-2">Dari Pangdam V/Brw No SPPD-31231 tanggal 7/12/2024</p>
+            </div>
+            <div class="top-desc">
+                <p class="top-desc-1">8. Perjalanan Dinas Dari</p>
+                <p style="width: 3%;">:</p>
+                <p class="top-desc-2">Surabaya ke Madiun (PP)</p>
+            </div>
+            <div class="top-desc">
+                <p class="top-desc-1">9. Hak atas biaya perjalanan dinas</p>
+                <p style="width: 3%;">:</p>
+            </div>
+            <table>
+                <thead>
+                    <th>JENIS BIAYA</th>
+                    <th style="width: 10%;">JUMLAH HARI</th>
+                    <th style="width: 40%;">PERHITUNGAN</th>
+                    <th>JUMLAH</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p>Uang Harian</p>
+                        </td>
+                        <td>
+                            <p>0</p>
+                        </td>
+                        <td>
+                            <p>1 (jumlah orang) x 1 (jumlah hari) x 160000 uang harian</p>
+                        </td>
+                        <td>
+                            <p>Rp. 160,000</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>Uang Penginapan</p>
+                        </td>
+                        <td>
+                            <p></p>
+                        </td>
+                        <td>
+                            <p>1 (jumlah orang) x 1 (jumlah hari) x 4400000 (total uang penginapan)</p>
+                        </td>
+                        <td>
+                            <p>Rp. 4,400,000</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>Uang Representasi</p>
+                        </td>
+                        <td>
+                            <p></p>
+                        </td>
+                        <td>
+                            <p>1 (jumlah orang) x 1 (jumlah hari) x 125000 (total uang representasi)</p>
+                        </td>
+                        <td>
+                            <p>Rp. 125,000</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <p>Uang BBM dan Pelumas</p>
+                        </td>
+                        <td>
+                            <p></p>
+                        </td>
+                        <td>
+                            <p>PP : (20 (Jarak KM) x 2 (PP) x 15,000 (Harga Bensin pertamax per liter)) / 4
+                                Jatah Harian : 1 (jumlah hari) x 7 x 15,000 (Harga Bensin pertamax per liter)</p>
+                        </td>
+                        <td>
+                            <p></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>BBM</p>
+                        </td>
+                        <td>
+                            <p></p>
+                        </td>
+                        <td>
+                            <p>PP</p>
+                            <p>Jatah Harian</p>
+                        </td>
+                        <td>
+                            <p>Rp. 150,000</p>
+                            <p>Rp. 105,000</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>Pelumas</p>
+                        </td>
+                        <td>
+                            <p></p>
+                        </td>
+                        <td>
+                            <p>PP</p>
+                            <p>Jatah Harian</p>
+                        </td>
+                        <td>
+                            <p>Rp. 24,000</p>
+                            <p>Rp. 18,000</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="3" style="text-align: left; padding-left: 10px;">
+                            JUMLAH
+                        </td>
+                        <td>
+                            Rp. 4,982,000
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="top-desc">
+                <p class="top-desc-1">Keterangan</p>
+                <p style="width: 3%;">:</p>
+                <p class="top-desc-2"></p>
+            </div>
+            <div class="date-sign">
+                <p>Surabaya, 11 Juli 2024</p>
+            </div>
+            <div class="sign-container">
+                <div class="sign-content">
+                    <p>Mengetahui</p>
+                    <p>Pejabat Pembuat Komitmen</p>
+                    <p style="margin-top: 150px;">aaa</p>
                 </div>
-                <div class="content">
-                    <p class="top-title">DAFTAR PERHITUNGAN BIAYA PERJALANAN DINAS</p>
-                    <div class="top-desc">
-                        <p class="top-desc-1">1. Nama</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">Anggota 2</p>
-                    </div>
-                    <div class="top-desc">
-                        <p class="top-desc-1">2. Pangkat/Gol, NRP/NIP</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">Serdi, NRP 1234567890</p>
-                    </div>
-                    <div class="top-desc">
-                        <p class="top-desc-1">3. Jabatan</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">Serdi</p>
-                    </div>
-                    <div class="top-desc">
-                        <p class="top-desc-1">4. Kesatuan</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2"></p>
-                    </div>
-                    <div class="top-desc">
-                        <p class="top-desc-1">5. Daftar Pengikut</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">1 Orang</p>
-                    </div>
-                    <table style="text-align: left;">
-                        <thead>
-                            <th style="padding: 5px 10px;">PERJALANAN DINAS JABATAN</th>
-                            <th style="padding: 5px 10px;">PERJALANAN DINAS PINDAH</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding: 15px 10px; vertical-align: top;">
-                                    
-                                        <p>1. Serdi, Anggota 2, 1234567890</p>
-                                    
-                                </td>
-                                <td style="padding: 15px 10px;">
-                                    <div style="display: flex; justify-content: space-between;"><p>1. Istri/Suami</p><p>.......... Orang</p></div>
-                                    <div style="display: flex; justify-content: space-between;"><p>2. Anak (12 Tahun Keatas)</p><p>.......... Orang</p></div>
-                                    <div style="display: flex; justify-content: space-between;"><p>(3 Sampai 12 Tahun)</p><p>.......... Orang</p></div>
-                                    <div style="display: flex; justify-content: space-between;"><p>(Dibawah 3 tahun)</p><p>.......... Orang</p></div>
-                                    <div style="display: flex; justify-content: space-between;"><p>3. Pembantu Rumah Tangga</p><p>.......... Orang</p></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 5px 10px;">
-                                    Jumlah Pengikut : 1 Orang
-                                </td>
-                                <td style="padding: 5px 10px;">
-                                    Jumlah Pengikut : .......... Orang
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="top-desc">
-                        <p class="top-desc-1">6. Surat Perintah (Sprin)</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">Dari Pangdam V/Brw No SPRIN-11 tanggal 6/24/2024</p>
-                    </div>
-                    <div class="top-desc">
-                        <p class="top-desc-1">7. Surat Perjalanan Dinas (SPPD)</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">Dari Pangdam V/Brw No SPPD-111s tanggal 6/24/2024</p>
-                    </div>
-                    <div class="top-desc">
-                        <p class="top-desc-1">8. Perjalanan Dinas Dari</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2">Surabaya ke Madiun (PP)</p>
-                    </div>
-                    <div class="top-desc">
-                        <p class="top-desc-1">9. Hak atas biaya perjalanan dinas</p>
-                        <p style="width: 3%;">:</p>
-                    </div>
-                    <table>
-                        <thead>
-                            <th>JENIS BIAYA</th>
-                            <th style="width: 10%;">JUMLAH HARI</th>
-                            <th style="width: 40%;">PERHITUNGAN</th>
-                            <th>JUMLAH</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <p>Uang Harian</p>
-                                </td>
-                                <td>
-                                    <p>3</p>
-                                </td>
-                                <td>
-                                    <p>1 (jumlah orang) x 3 (jumlah hari) x 160000 uang harian</p>
-                                </td>
-                                <td>
-                                    <p>Rp. 480,000</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>Uang Penginapan</p>
-                                </td>
-                                <td>
-                                    <p></p>
-                                </td>
-                                <td>
-                                    <p>1 (jumlah orang) x 3 (jumlah hari) x 1076000 (total uang penginapan)</p>
-                                </td>
-                                <td>
-                                    <p>Rp. 3,228,000</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>Uang Representasi</p>
-                                </td>
-                                <td>
-                                    <p></p>
-                                </td>
-                                <td>
-                                    <p>1 (jumlah orang) x 3 (jumlah hari) x 75000 (total uang representasi)</p>
-                                </td>
-                                <td>
-                                    <p>Rp. 225,000</p>
-                                </td>
-                            </tr>
-                            
-                                    <tr>
-                                        <td>
-                                            <p>Uang BBM dan Pelumas</p>
-                                        </td>
-                                        <td>
-                                            <p></p>
-                                        </td>
-                                        <td>
-                                            <p>PP : (20 (Jarak KM) x 2 (PP) x 15,000 (Harga Bensin pertamax per liter)) / 4
-Jatah Harian : 3 (jumlah hari) x 7 x 15,000 (Harga Bensin pertamax per liter)</p>
-                                        </td>
-                                        <td>
-                                            <p></p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p>BBM</p>
-                                        </td>
-                                        <td>
-                                            <p></p>
-                                        </td>
-                                        <td>
-                                            <p>PP</p>
-                                            <p>Jatah Harian</p>
-                                        </td>
-                                        <td>
-                                            <p>Rp. 150,000</p>
-                                            <p>Rp. 315,000</p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p>Pelumas</p>
-                                        </td>
-                                        <td>
-                                            <p></p>
-                                        </td>
-                                        <td>
-                                            <p>PP</p>
-                                            <p>Jatah Harian</p>
-                                        </td>
-                                        <td>
-                                            <p>Rp. 24,000</p>
-                                            <p>Rp. 54,000</p>
-                                        </td>
-                                    </tr>
-                                
-                            <tr>
-                                <td colspan="3" style="text-align: left; padding-left: 10px;">
-                                    JUMLAH
-                                </td>
-                                <td>
-                                    Rp. 4,476,000
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="top-desc">
-                        <p class="top-desc-1">Keterangan</p>
-                        <p style="width: 3%;">:</p>
-                        <p class="top-desc-2"></p>
-                    </div>
-                    <div class="date-sign">
-                        <p>Surabaya, 24 Juni 2024</p>
-                    </div>
-                    <div class="sign-container">
-                        <div class="sign-content">
-                            <p>Mengetahui</p>
-                            <p>Pejabat Pembuat Komitmen</p>
-                        </div>
-                        <div class="sign-content">
-                            <p>Yang Membuat Perhitungan</p>
-                            <p>Bendahara Pengeluaran</p>
-                        </div>
-                    </div>
+                <div class="sign-content">
+                    <p>Yang Membuat Perhitungan</p>
+                    <p>Bendahara Pengeluaran</p>
+                    <p style="margin-top: 150px;">Bendahara Pengeluaran</p>
                 </div>
-            </section>
-        </body>
-        </html>
+            </div>
+        </div>
+        </div>
+    </section>
+</body>
+
+</html>

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useSelector } from 'react-redux'
+import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 import { baseUrl } from '../../service/apiConfig'
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
+import photoProfile from '../../assets/images/pp.png'
 
 const DaftarDipa = ({ navigation }) => {
+    const dispatch = useDispatch()
     const token = useSelector(state => state.auth.token)
-
-    const [dataDipa, setDataDipa] = useState([])
+    const dataDipa = useSelector(state => state.dipa)
 
     const getAllDipa = () => {
         axios({
@@ -23,37 +24,45 @@ const DaftarDipa = ({ navigation }) => {
                 role: 'dipa'
             },
         })
-        .then(res => {
-            setDataDipa(res.data.data)
-        })
-        .catch(err => {
-            console.log('err =', err.response.data)
-            alert(err.response.data.message)
-        })
+            .then(res => {
+                dispatch({ type: 'SAVE_DIPA', data: res.data.data })
+            })
+            .catch(err => {
+                console.log('err =', err.response.data)
+                alert(err.response.data.message)
+            })
     }
 
     useEffect(() => getAllDipa(), [])
 
     return (
         <View style={{ flex: 1 }}>
-        {/* Header */}
-        <Header title='Daftar DIPA' />
-        {/* Content */}
+            {/* Header */}
+            <Header title='Daftar DIPA' />
+            {/* Content */}
             <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
-            <View style={styles.content}>
-                { dataDipa.map((item, index) => (
-                    <Pressable
-                        key={index}
-                        style={styles.card}
-                        onPress={() => navigation.navigate('Detail Dipa', item)}
-                    >
-                        <Text style={styles.anggotaTitle}>{item.nama}</Text>
-                        <Text style={styles.anggotaTitle}>{item.nrp}</Text>
-                        <Text style={styles.anggotaText}>{item.pangkat}</Text>
-                        <Text style={styles.anggotaText}>{item.bagian}</Text>
-                    </Pressable>
-                ))}
-            </View>
+                <View style={styles.content}>
+                    {dataDipa.map((item, index) => (
+                        <Pressable
+                            key={index}
+                            style={styles.card}
+                            onPress={() => navigation.navigate('Detail Dipa', item)}
+                        >
+                            <View style={styles.photoContainer}>
+                                <Image source={item.foto ? { uri: item.foto } : photoProfile} style={styles.photo} />
+                            </View>
+                            <Text style={styles.anggotaTitle}>{item.nama}</Text>
+                            <Text style={styles.anggotaTitle}>{item.nrp}</Text>
+                            <Text style={styles.anggotaText}>{item.pangkat}</Text>
+                            <Text style={styles.anggotaText}>{item.bagian}</Text>
+                            <Text
+                                style={[styles.anggotaTitle, { color: item.active ? COLORS.GREEN : COLORS.RED }]}
+                            >
+                                {item.active ? 'Aktif' : 'Non Aktif'}
+                            </Text>
+                        </Pressable>
+                    ))}
+                </View>
             </ScrollView>
             <Pressable
                 style={styles.btn}
@@ -69,8 +78,8 @@ export default DaftarDipa
 
 const styles = StyleSheet.create({
     content: {
-        flex: 1, 
-        padding: 14, 
+        flex: 1,
+        padding: 14,
         backgroundColor: COLORS.WHITE,
         alignItems: 'center'
     },

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import DropDownPicker from 'react-native-dropdown-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { Picker } from '@react-native-picker/picker';
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, Image, ScrollView, StyleSheet, Switch, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
 import { editAnggota, getProfile } from '../../service/userService';
 
@@ -11,72 +11,128 @@ import Layout from '../../components/Layout';
 import CustomButton from '../../components/Button';
 import Input from '../../components/Input';
 import { getPangkat } from '../../service/e-sipdService';
+import axios from 'axios';
+import { baseUrl } from '../../service/apiConfig';
 
 const EditDipa = ({ route, navigation }) => {
-    const dispatch = useDispatch()
+  const dispatch = useDispatch()
 
-    const token = useSelector(state => state.auth.token)
+  const token = useSelector(state => state.auth.token)
 
-    const { params } = route;
+  const { params } = route;
 
-    // Pangkat
-    const [pangkat, setPangkat] = useState(params.pangkat)
-    const [daftarPangkat, setDaftarPangkat] = useState([
-      {label: 'Letnan', value: 'Letnan'},
-      {label: 'Kapten', value: 'Kapten'},
-      {label: 'Kolonel', value: 'Kolonel'},
-      {label: 'Jenderal', value: 'Jenderal'}
-    ]);
+  // Pangkat
+  const [pangkat, setPangkat] = useState(params.pangkat)
+  const [daftarPangkat, setDaftarPangkat] = useState([
+    { label: 'Letnan', value: 'Letnan' },
+    { label: 'Kapten', value: 'Kapten' },
+    { label: 'Kolonel', value: 'Kolonel' },
+    { label: 'Jenderal', value: 'Jenderal' }
+  ]);
 
-    // Bagian
-    const [bagian, setBagian] = useState(params.bagian)
-    const [itemsBagian, setItemsBagian] = useState([
-      {label: 'Manajemen', value: 'Manajemen'},
-      {label: 'Pengurus', value: 'Pengurus'},
-      {label: 'Bagian 1', value: '1'},
-      {label: 'Bagian 2', value: '2'},
-    ]);
+  // Bagian
+  const [bagian, setBagian] = useState(params.bagian)
+  const [itemsBagian, setItemsBagian] = useState([
+    { label: 'Manajemen', value: 'Manajemen' },
+    { label: 'Pengurus', value: 'Pengurus' },
+    { label: 'Bagian 1', value: '1' },
+    { label: 'Bagian 2', value: '2' },
+  ]);
 
-    // Data
-    const [nama, setNama] = useState(params.nama)
-    const [nrp, setNrp] = useState(params.nrp)
-    const [jabatan, setJabatan] = useState(params.jabatan)
+  // Data
+  const [nama, setNama] = useState(params.nama)
+  const [nrp, setNrp] = useState(params.nrp)
+  const [jabatan, setJabatan] = useState(params.jabatan)
+  const [active, setActive] = useState(params.aktif || false)
+  const [image, setImage] = useState(params.foto)
 
-    const handleEditDipa = () => {
-      editAnggota(params.id, token, {
-        nama,
-        nrp,
-        pangkat,
-        jabatan,
-        bagian,
-      })
-      .then(response => {
-        getProfile(params.id, token)
-        .then(res => {
-          dispatch({type: 'SAVE_CURRENT_USER', data: {
-            id: res.data.data.id,
-            nama: res.data.data.nama,
-            username: res.data.data.username,
-            nrp: res.data.data.nrp,
-            alamat: res.data.data.alamat,
-            pangkat: res.data.data.pangkat,
-            bagian: res.data.data.bagian,
-            foto: res.data.data.foto,
-            jabatan: res.data.data.jabatan,
-            role: res.data.data.role
-          }})
-          alert('Sukses Mengedit Anggota')
-          navigation.goBack()
-        })
+  const getAllDipa = () => {
+    axios({
+      method: 'GET',
+      url: `${baseUrl}/users`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params: {
+        role: 'dipa'
+      },
+    })
+      .then(res => {
+        dispatch({ type: 'SAVE_DIPA', data: res.data.data })
       })
       .catch(err => {
         console.log('err =', err.response.data)
         alert(err.response.data.message)
       })
+  }
+
+  const handleEditDipa = () => {
+    editAnggota(params.id, token, {
+      nama,
+      nrp,
+      pangkat,
+      jabatan,
+      bagian,
+      aktif: active
+    })
+      .then(response => {
+        getProfile(params.id, token)
+          .then(res => {
+            dispatch({
+              type: 'SAVE_CURRENT_USER', data: {
+                id: res.data.data.id,
+                nama: res.data.data.nama,
+                username: res.data.data.username,
+                nrp: res.data.data.nrp,
+                alamat: res.data.data.alamat,
+                pangkat: res.data.data.pangkat,
+                bagian: res.data.data.bagian,
+                foto: res.data.data.foto,
+                jabatan: res.data.data.jabatan,
+                role: res.data.data.role,
+                aktif: res.data.data.active,
+              }
+            })
+            getAllDipa()
+            alert('Sukses Mengedit Dipa')
+            navigation.goBack()
+          })
+      })
+      .catch(err => {
+        console.log('err =', err.response.data)
+        alert(err.response.data.message)
+      })
+  }
+
+  const handleChangeProfileImage = async () => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: true
     }
 
-    const handleGetPangkat = () => {
-      getPangkat(token)
+    launchImageLibrary(options, async (res) => {
+      if (res.didCancel) {
+        console.log('User Canceled')
+      } else {
+        const response = await axios({
+          method: 'POST',
+          url: `${baseUrl}/upload-profile`,
+          data: {
+            userId: params?.id,
+            file: {
+              base64: res.assets[0].base64,
+              type: res.assets[0].type
+            }
+          }
+        })
+        setImage(response.data.data)
+        getAllDipa()
+      }
+    });
+  }
+
+  const handleGetPangkat = () => {
+    getPangkat(token)
       .then(res => {
         setDaftarPangkat(res.data.data)
       })
@@ -84,99 +140,137 @@ const EditDipa = ({ route, navigation }) => {
         console.log('err =', err.response.data)
         alert(err.response.data.message)
       })
-    }
+  }
 
-    useEffect(() => {
-      handleGetPangkat()
-    }, [])
+  useEffect(() => {
+    handleGetPangkat()
+  }, [])
 
-    return (
-      <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
+  return (
+    <ScrollView style={{ backgroundColor: COLORS.WHITE }} showsVerticalScrollIndicator={false}>
       <Layout title='Edit DIPA' contentStyle={{ paddingTop: 40 }}>
-            {/* Menus */}
-            <View style={{ width: '80%' }}>
-              <View style={styles.menu}>
-                <Text style={styles.menuTxt}>Nama</Text>
-                <Input value={nama} onChangeText={text => setNama(text)} />
-              </View>
-              <View style={styles.menu}>
-                <Text style={styles.menuTxt}>NRP</Text>
-                <Input value={nrp} onChangeText={text => setNrp(text)} />
-              </View>
-              <View style={[styles.menu, {zIndex: 2}]}>
-                <Text style={styles.menuTxt}>Pangkat</Text>
-                <View style={styles.picker}>
-                  <Picker
-                    selectedValue={pangkat}
-                    style={{ color: 'black' }}
-                    onValueChange={itemValue => setPangkat(itemValue)}
-                  >
-                    { daftarPangkat.map((item, index) => (
-                      <Picker.Item
-                          key={index}
-                          label={item.sub_pangkat} 
-                          value={item.sub_pangkat} 
-                          style={{ fontSize: 17 }} 
-                      />
-                    ))}
-                  </Picker>
-                </View>
-              </View>
-              <View style={[styles.menu, {zIndex: 1}]}>
-                <Text style={styles.menuTxt}>Bagian</Text>
-                <View style={styles.picker}>
-                  <Picker
-                    selectedValue={bagian}
-                    style={{ color: 'black' }}
-                    onValueChange={itemValue => setBagian(itemValue)}
-                  >
-                    { itemsBagian.map((item, index) => (
-                      <Picker.Item
-                          key={index}
-                          label={item.label} 
-                          value={item.value} 
-                          style={{ fontSize: 17 }} 
-                      />
-                    ))}
-                  </Picker>
-                </View>
-              </View>
-              <View style={styles.menu}>
-                <Text style={styles.menuTxt}>Jabatan</Text>
-                <Input value={jabatan} onChangeText={text => setJabatan(text)} />
-              </View>
+        {/* Image */}
+        <View style={styles.photoContainer}>
+          <Image source={{ uri: image }} style={styles.photo} />
+        </View>
+        {/* Upload Button */}
+        <CustomButton title='Choose File' buttonStyle={styles.chooseBtn} style={styles.chooseBtnTxt} onPress={handleChangeProfileImage} />
+        {/* Menus */}
+        <View style={{ width: '80%' }}>
+          <View style={styles.menu}>
+            <Text style={styles.menuTxt}>Nama</Text>
+            <Input value={nama} onChangeText={text => setNama(text)} />
+          </View>
+          <View style={styles.menu}>
+            <Text style={styles.menuTxt}>NRP</Text>
+            <Input value={nrp} onChangeText={text => setNrp(text)} />
+          </View>
+          <View style={[styles.menu, { zIndex: 2 }]}>
+            <Text style={styles.menuTxt}>Pangkat</Text>
+            <View style={styles.picker}>
+              <Picker
+                selectedValue={pangkat}
+                style={{ color: 'black' }}
+                onValueChange={itemValue => setPangkat(itemValue)}
+              >
+                {daftarPangkat.map((item, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={item.sub_pangkat}
+                    value={item.sub_pangkat}
+                    style={{ fontSize: 17 }}
+                  />
+                ))}
+              </Picker>
             </View>
-            {/* Button */}
-            <View style={styles.footer}>
-                <CustomButton title='Submit' buttonStyle={styles.submitBtn} onPress={() => handleEditDipa()} />
+          </View>
+          <View style={[styles.menu, { zIndex: 1 }]}>
+            <Text style={styles.menuTxt}>Bagian</Text>
+            <View style={styles.picker}>
+              <Picker
+                selectedValue={bagian}
+                style={{ color: 'black' }}
+                onValueChange={itemValue => setBagian(itemValue)}
+              >
+                {itemsBagian.map((item, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={item.label}
+                    value={item.value}
+                    style={{ fontSize: 17 }}
+                  />
+                ))}
+              </Picker>
             </View>
+          </View>
+          <View style={styles.menu}>
+            <Text style={styles.menuTxt}>Jabatan</Text>
+            <Input value={jabatan} onChangeText={text => setJabatan(text)} />
+          </View>
+          <View style={{ flexDirection: 'row', marginTop: 8 }}>
+            <Text style={styles.menuTxt}>Aktif</Text>
+            <Switch
+              onValueChange={() => setActive(!active)}
+              value={active}
+              style={{ alignSelf: 'flex-start' }}
+            />
+          </View>
+        </View>
+        {/* Button */}
+        <View style={styles.footer}>
+          <CustomButton title='Submit' buttonStyle={styles.submitBtn} onPress={() => handleEditDipa()} />
+        </View>
       </Layout>
-      </ScrollView>
-    )
+    </ScrollView>
+  )
 }
 
 export default EditDipa
 
 const styles = StyleSheet.create({
-    menu: {
-      marginBottom: 10
-    },
-    menuTxt: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: COLORS.BLACK,
-      marginBottom: 5
-    },
-    picker: {
-      borderColor: COLORS.GRAY, 
-      borderWidth: 1, 
-      borderRadius: 8,
-    },
-    footer: {
-      flexDirection: 'row',
-      marginTop: 20
-    },
-    submitBtn: {
-      width: '80%',
-    },
+  photoContainer: {
+    backgroundColor: COLORS.WHITE,
+    elevation: 10,
+    borderColor: COLORS.GRAY,
+    borderRadius: 8,
+    overflow: 'hidden',
+    width: '70%',
+    height: Dimensions.get('screen').height * 0.3,
+    marginBottom: 15
+  },
+  photo: {
+    width: '100%',
+    height: '100%',
+  },
+  menu: {
+    marginBottom: 10
+  },
+  menuTxt: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.BLACK,
+    marginBottom: 5
+  },
+  picker: {
+    borderColor: COLORS.GRAY,
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  footer: {
+    flexDirection: 'row',
+    marginTop: 20
+  },
+  submitBtn: {
+    width: '80%',
+  },
+  chooseBtn: {
+    width: '45%',
+    backgroundColor: COLORS.WHITE,
+    borderWidth: 1,
+    marginBottom: 15,
+    borderColor: COLORS.GRAY,
+  },
+  chooseBtnTxt: {
+    color: COLORS.BLACK,
+  },
 })
