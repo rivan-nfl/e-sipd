@@ -366,12 +366,12 @@ const DetailPerjalanan = ({ route, navigation }) => {
                         <div class="sign-content">
                             <p>Mengetahui</p>
                             <p>Pejabat Pembuat Komitmen</p>
-                            <p style="margin-top: 150px;">${data.nama}</p>
+                            <p style="margin-top: 150px;">${params?.approved_by}</p>
                         </div>
                         <div class="sign-content">
                             <p>Yang Membuat Perhitungan</p>
                             <p>Bendahara Pengeluaran</p>
-                            <p style="margin-top: 150px;">Bendahara Pengeluaran</p>
+                            <p style="margin-top: 150px;">${data.nama}</p>
                         </div>
                     </div>
                 </div>
