@@ -12,10 +12,10 @@ import { baseUrl } from '../../../service/apiConfig'
 const Login = ({ navigation }) => {
   const dispatch = useDispatch()
 
-  // const [username, setUsername] = useState('')
-  const [username, setUsername] = useState('bati')
-  // const [password, setPassword] = useState('')
-  const [password, setPassword] = useState('spersdamvbrw')
+  const [username, setUsername] = useState('')
+  // const [username, setUsername] = useState('bati')
+  const [password, setPassword] = useState('')
+  // const [password, setPassword] = useState('spersdamvbrw')
 
   const handleLogin = () => {
     axios({
