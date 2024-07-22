@@ -35,6 +35,7 @@ const EditAnggota = ({ route, navigation }) => {
   const [nrp, setNrp] = useState(params.nrp)
   const [pangkat, setPangkat] = useState(params.pangkat)
   const [jabatan, setJabatan] = useState(params.jabatan)
+  const [bagian, setBagian] = useState(params.bagian)
   const [active, setActive] = useState(params.aktif || false)
   const [image, setImage] = useState(params.foto)
 
@@ -64,8 +65,9 @@ const EditAnggota = ({ route, navigation }) => {
       nrp,
       pangkat,
       jabatan,
-      aktif: active
-      // image
+      bagian,
+      aktif: active,
+      pangkat_id: (daftarPangkat?.find(item => item.sub_pangkat === pangkat)).id
     })
       .then(response => {
         getProfile(params.id, token)
@@ -179,6 +181,15 @@ const EditAnggota = ({ route, navigation }) => {
           <View style={styles.menu}>
             <Text style={styles.menuTxt}>Jabatan</Text>
             <Input value={jabatan} onChangeText={text => setJabatan(text)} />
+          </View>
+          <View style={styles.menu}>
+            <Text style={styles.menuTxt}>Bagian</Text>
+            <Input
+              placeholder={'Bagian'}
+              placeholderTextColor='grey'
+              value={bagian}
+              onChangeText={text => setBagian(text)}
+            />
           </View>
           <View style={{ flexDirection: 'row', marginTop: 8 }}>
             <Text style={styles.menuTxt}>Aktif</Text>

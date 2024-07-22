@@ -12,10 +12,10 @@ import { baseUrl } from '../../../service/apiConfig'
 const Login = ({ navigation }) => {
   const dispatch = useDispatch()
 
-  const [username, setUsername] = useState('')
-  // const [username, setUsername] = useState('anggota')
-  const [password, setPassword] = useState('')
-  // const [password, setPassword] = useState('password')
+  // const [username, setUsername] = useState('')
+  const [username, setUsername] = useState('bati')
+  // const [password, setPassword] = useState('')
+  const [password, setPassword] = useState('spersdamvbrw')
 
   const handleLogin = () => {
     axios({
@@ -26,26 +26,28 @@ const Login = ({ navigation }) => {
         password
       }
     })
-    .then(res => {
-      dispatch({type: 'LOGIN', token: res.data.token})
-      dispatch({type: 'SAVE_USER', data: {
-        id: res.data.data.id,
-        nama: res.data.data.nama,
-        username: res.data.data.username,
-        nrp: res.data.data.nrp,
-        alamat: res.data.data.alamat,
-        pangkat: res.data.data.pangkat,
-        bagian: res.data.data.bagian,
-        foto: res.data.data.foto,
-        jabatan: res.data.data.jabatan,
-        role: res.data.data.role,
-      }})
-      navigation.navigate('Main')
-    })
-    .catch(err => {
-      console.log('err =', err.response.data)
-      alert(err.response.data.message)
-    })
+      .then(res => {
+        dispatch({ type: 'LOGIN', token: res.data.token })
+        dispatch({
+          type: 'SAVE_USER', data: {
+            id: res.data.data.id,
+            nama: res.data.data.nama,
+            username: res.data.data.username,
+            nrp: res.data.data.nrp,
+            alamat: res.data.data.alamat,
+            pangkat: res.data.data.pangkat,
+            bagian: res.data.data.bagian,
+            foto: res.data.data.foto,
+            jabatan: res.data.data.jabatan,
+            role: res.data.data.role,
+          }
+        })
+        navigation.navigate('Main')
+      })
+      .catch(err => {
+        console.log('err =', err.response.data)
+        alert(err.response.data.message)
+      })
   }
 
   return (
@@ -66,21 +68,21 @@ const Login = ({ navigation }) => {
 export default Login
 
 const styles = StyleSheet.create({
-  container: { 
-    alignItems: 'center', 
-    justifyContent: 'center', 
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 25
   },
-  logo: { 
+  logo: {
     width: '40%',
-    aspectRatio: 1 
+    aspectRatio: 1
   },
   logoImg: {
     width: '100%',
     height: '100%'
   },
   loginCard: {
-    marginVertical: 50, 
+    marginVertical: 50,
     width: '100%'
   },
   inputPassword: {

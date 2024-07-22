@@ -40,7 +40,7 @@ const DetailPerjalanan = ({ route, navigation }) => {
             pangkat: pejalan[0]?.pangkat,
             nrp: pejalan[0]?.nrp,
             jabatan: pejalan[0]?.jabatan,
-            kesatuan: '',
+            kesatuan: pejalan[0]?.bagian,
             daftarPengikut: [],
             sprint: params?.nomor_sprint,
             sppd: params?.nomor_sppd,
@@ -483,7 +483,6 @@ const DetailPerjalanan = ({ route, navigation }) => {
                         alert('Sukses Menyelesaikan Perjalanan')
                         navigation.navigate('Home')
                     } else {
-                        console.log(response)
                         alert(response.data?.message || 'Gagal mengupload asset perjalanan')
                     }
                 }

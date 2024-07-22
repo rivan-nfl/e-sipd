@@ -107,7 +107,8 @@ const Register = ({ route, navigation }) => {
         image: "",
         username,
         password,
-        role
+        role,
+        pangkat_id: (items?.find(item => item.sub_pangkat === value)).id
       })
         .then(res => {
           if (image?.uri) {
@@ -241,16 +242,15 @@ const Register = ({ route, navigation }) => {
               onChangeText={text => setJabatan(text)}
             />
           </View>
-          {role == 'dipa' && (
-            <View style={styles.menu}>
-              <Text style={styles.menuTxt}>Bagian</Text>
-              <Input
-                placeholder={'Bagian'}
-                placeholderTextColor='grey'
-                value={valueBagian}
-                onChangeText={text => setValueBagian(text)}
-              />
-              {/* <View style={styles.picker}>
+          <View style={styles.menu}>
+            <Text style={styles.menuTxt}>Bagian</Text>
+            <Input
+              placeholder={'Bagian'}
+              placeholderTextColor='grey'
+              value={valueBagian}
+              onChangeText={text => setValueBagian(text)}
+            />
+            {/* <View style={styles.picker}>
             <Picker
               selectedValue={valueBagian}
               onValueChange={itemValue => setValueBagian(itemValue)}
@@ -265,8 +265,7 @@ const Register = ({ route, navigation }) => {
               ))}
             </Picker>
             </View> */}
-            </View>
-          )}
+          </View>
           <View style={styles.menu}>
             <Text style={styles.menuTxt}>Username</Text>
             <Input

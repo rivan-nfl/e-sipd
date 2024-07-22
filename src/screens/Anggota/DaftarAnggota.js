@@ -59,6 +59,7 @@ const DaftarAnggota = ({ navigation }) => {
                             <Text style={styles.anggotaTitle}>{item.nama}</Text>
                             <Text style={styles.anggotaTitle}>{item.nrp}</Text>
                             <Text style={styles.anggotaText}>{item.pangkat}</Text>
+                            <Text style={styles.anggotaText}>{item.bagian}</Text>
                             <Text
                                 style={[styles.anggotaTitle, { color: item.active ? COLORS.GREEN : COLORS.RED }]}
                             >

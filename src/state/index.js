@@ -6,7 +6,8 @@ import perjalanan from './perjalanan'
 import notifikasi from './notifikasi'
 import anggota from './anggota'
 import dipa from './dipa'
+import anggaran from './anggaran'
 
-const store = createStore(combineReducers({ user, auth, userManagement, perjalanan, notifikasi, anggota, dipa }))
+const store = createStore(combineReducers({ user, auth, userManagement, perjalanan, notifikasi, anggota, dipa, anggaran }))
 
 export default store

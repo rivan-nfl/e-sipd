@@ -86,6 +86,7 @@ const DetailAnggota = ({ route, navigation }) => {
                 <Text style={styles.text}>{user.nrp}</Text>
                 <Text style={styles.text}>{user.pangkat}</Text>
                 <Text style={styles.text}>{user.jabatan}</Text>
+                <Text style={styles.text}>{user.bagian}</Text>
                 <Text style={[styles.text, { color: user.aktif ? COLORS.GREEN : COLORS.RED }]}>{user.aktif ? 'Aktif' : 'Non Aktif'}</Text>
             </View>
             <View style={styles.footer}>

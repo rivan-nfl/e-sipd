@@ -73,7 +73,8 @@ const EditDipa = ({ route, navigation }) => {
       pangkat,
       jabatan,
       bagian,
-      aktif: active
+      aktif: active,
+      pangkat_id: (daftarPangkat?.find(item => item.sub_pangkat === pangkat)).id
     })
       .then(response => {
         getProfile(params.id, token)
@@ -185,22 +186,14 @@ const EditDipa = ({ route, navigation }) => {
             </View>
           </View>
           <View style={[styles.menu, { zIndex: 1 }]}>
-            <Text style={styles.menuTxt}>Bagian</Text>
-            <View style={styles.picker}>
-              <Picker
-                selectedValue={bagian}
-                style={{ color: 'black' }}
-                onValueChange={itemValue => setBagian(itemValue)}
-              >
-                {itemsBagian.map((item, index) => (
-                  <Picker.Item
-                    key={index}
-                    label={item.label}
-                    value={item.value}
-                    style={{ fontSize: 17 }}
-                  />
-                ))}
-              </Picker>
+            <View style={styles.menu}>
+              <Text style={styles.menuTxt}>Bagian</Text>
+              <Input
+                placeholder={'Bagian'}
+                placeholderTextColor='grey'
+                value={bagian}
+                onChangeText={text => setBagian(text)}
+              />
             </View>
           </View>
           <View style={styles.menu}>

@@ -9,7 +9,7 @@ import profilePhoto from '../../assets/images/pp.png'
 import CustomButton from '../../components/Button'
 import { baseUrl } from '../../service/apiConfig'
 
-const Akun = () => {
+const Akun = ({ navigation }) => {
   const dispatch = useDispatch()
   const profile = useSelector(state => state.user)
   const token = useSelector(state => state.auth.token)
@@ -22,24 +22,27 @@ const Akun = () => {
         Authorization: `Bearer ${token}`
       }
     })
-    .then(res => {
-      dispatch({type: 'SAVE_USER', data: {
-        id: res.data.data.id,
-        nama: res.data.data.nama,
-        username: res.data.data.username,
-        nrp: res.data.data.nrp,
-        alamat: res.data.data.alamat,
-        pangkat: res.data.data.pangkat,
-        bagian: res.data.data.bagian,
-        foto: res.data.data.foto,
-        jabatan: res.data.data.jabatan,
-        role: res.data.data.role
-      }})
-    })
-    .catch(err => {
-      console.log('err =', err.response.data)
-      alert(err.response.data.message)
-    })
+      .then(res => {
+        dispatch({
+          type: 'SAVE_USER', data: {
+            id: res.data.data.id,
+            nama: res.data.data.nama,
+            username: res.data.data.username,
+            nrp: res.data.data.nrp,
+            alamat: res.data.data.alamat,
+            pangkat: res.data.data.pangkat,
+            bagian: res.data.data.bagian,
+            foto: res.data.data.foto,
+            jabatan: res.data.data.jabatan,
+            role: res.data.data.role,
+            aktif: res.data.data.active,
+          }
+        })
+      })
+      .catch(err => {
+        console.log('err =', err.response.data)
+        alert(err.response.data.message)
+      })
   }
 
   useEffect(() => getProfile(), [])
@@ -47,21 +50,24 @@ const Akun = () => {
   return (
     <View style={{ flex: 1 }}>
       {/* Header */}
-      <Header title='Admin' type={true} />
+      <Header title='Admin' type={false} />
       {/* Content */}
       <View style={styles.content}>
         <View style={styles.photoContainer}>
-          <Image source={profile.foto ? { uri: profile.foto } : profilePhoto} style={styles.photoProfile} />
+          <Image source={profile.foto && profile.foto !== 'null' ? { uri: profile.foto } : profilePhoto} style={styles.photoProfile} />
         </View>
         <View style={styles.profileContainer}>
           <Text style={styles.textProfileMenu}>{profile.nama}</Text>
           <Text style={styles.textProfileMenu}>{profile.nrp}</Text>
           <Text style={styles.textProfileMenu}>{profile.pangkat}</Text>
           <Text style={styles.textProfileMenu}>{profile.jabatan}</Text>
-          { profile?.bagian && profile?.role !== 'anggota' && <Text style={styles.textProfileMenu}>{profile.bagian}</Text> }
+          {profile?.bagian && profile?.role !== 'anggota' && <Text style={styles.textProfileMenu}>{profile.bagian}</Text>}
         </View>
         <View style={styles.footer}>
-            <CustomButton title='Logout' onPress={() => dispatch({type: 'LOGOUT'})} />
+          {profile?.role === 'admin' && (
+            <CustomButton title='Edit Profil' buttonStyle={{ marginBottom: 10 }} onPress={() => navigation.navigate('Edit Admin', profile)} />
+          )}
+          <CustomButton title='Logout' onPress={() => dispatch({ type: 'LOGOUT' })} />
         </View>
       </View>
     </View>
@@ -72,8 +78,8 @@ export default Akun
 
 const styles = StyleSheet.create({
   content: {
-    flex: 1, 
-    padding: 14, 
+    flex: 1,
+    padding: 14,
     backgroundColor: COLORS.WHITE,
     alignItems: 'center'
   },
