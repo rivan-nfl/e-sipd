@@ -1,12 +1,34 @@
 import React from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { COLORS } from '../../utils/colors'
 import Header from '../../components/Header'
 import CustomButton from '../../components/Button';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { baseUrl } from '../../service/apiConfig';
+import { getAnggaran } from '../../service/e-sipdService';
 
 const AnggaranPerjalananDetail = ({ navigation }) => {
+    const dispatch = useDispatch()
+    const token = useSelector(state => state.auth.token)
     const params = useSelector(state => state.anggaran.detail)
+
+    const handleDeleteAnggaran = async () => {
+        try {
+            const res = await axios({
+                method: 'DELETE',
+                url: `${baseUrl}/anggaran/${params.id}`,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            const allData = await getAnggaran(token)
+            dispatch({ type: 'SAVE_ANGGARAN', data: allData.data.data })
+            navigation.goBack()
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     if (!params?.id) {
         return (
@@ -64,7 +86,14 @@ const AnggaranPerjalananDetail = ({ navigation }) => {
                     <CustomButton
                         title='Delete'
                         buttonStyle={{ width: '45%' }}
-                        onPress={() => alert('Delete')}
+                        onPress={() => Alert.alert(
+                            "Hapus",
+                            "Yakin ingin menghapus anggaran ini ?",
+                            [
+                                { text: "Batal", onPress: () => null },
+                                { text: "Hapus", onPress: handleDeleteAnggaran }
+                            ]
+                        )}
                     />
                 </View>
             </ScrollView>
